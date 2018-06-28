@@ -39,7 +39,7 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("JeremyTCD.WebUtils.SyntaxHighlighters.Prism.Strings", typeof(Strings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Strings", typeof(Strings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,11 +61,11 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &quot;{0}&quot; is not a valid Prism language alias. Visit https://prismjs.com/index.html#languages-list for the list of language aliases..
+        ///   Looks up a localized string similar to &quot;{0}&quot; is not a valid HighlightJS language alias. Visit http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#language-names-and-aliases for the list of language aliases..
         /// </summary>
-        internal static string Exception_InvalidPrismLanguageAlias {
+        internal static string Exception_InvalidHighlightJSLanguageAlias {
             get {
-                return ResourceManager.GetString("Exception_InvalidPrismLanguageAlias", resourceCulture);
+                return ResourceManager.GetString("Exception_InvalidHighlightJSLanguageAlias", resourceCulture);
             }
         }
         
