@@ -1,7 +1,7 @@
 {
     "private": true,
     "scripts": {
-        "build": "node ./build.js"
+        "build": "echo. && echo Yarn Install: && yarn install && echo. && echo Webpack: && webpack"
     },
     "dependencies": {
         "@types/highlight.js": "^9.12.3",
@@ -11,3 +11,4 @@
         "yargs": "^11.0.0"
     }
 }
+ 
