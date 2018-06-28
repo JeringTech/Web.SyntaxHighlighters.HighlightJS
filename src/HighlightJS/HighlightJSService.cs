@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.NodeServices;
 using Microsoft.AspNetCore.NodeServices.HostingModels;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS
@@ -15,37 +16,31 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS
         /// can take several hundred milliseconds. Wrap in a <see cref="Task{T}"/> for asynchrony.
         /// More information on AsyncLazy - https://blogs.msdn.microsoft.com/pfxteam/2011/01/15/asynclazyt/.
         /// </summary>
-        private readonly Lazy<Task<string[]>> _languageNames;
+        private readonly Lazy<Task<HashSet<string>>> _aliases;
 
         public HighlightJSService(INodeServices nodeServices)
         {
             _nodeServices = nodeServices;
-            _languageNames = new Lazy<Task<string[]>>(LanguageNamesFactoryAsync);
+            _aliases = new Lazy<Task<HashSet<string>>>(GetAliasesAsync);
         }
 
         /// <summary>
         /// Highlights <paramref name="code"/>.
         /// </summary>
-        /// <param name="languageNameOrAlias">A HighlightJS language name or alias. Visit http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#language-names-and-aliases 
-        /// for the full list of language names and aliases.</param>
         /// <param name="code">Code to highlight.</param>
-        /// <param name="ignoreIllegals">If false, throws an error if code is syntactically invalid. If true, disregards syntactic validity when highlighting.</param>
-        /// <param name="tabReplace">If not null, tabs will be replaced with this string.</param>
-        /// <param name="useBR">If true, newline characters will be replaced with br elements.</param>
-        /// <param name="classPrefix">If not null, this string will be appended to HighlightJS classes.</param>
+        /// <param name="languageAlias">A HighlightJS language alias. Visit http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#language-names-and-aliases 
+        /// for the full list of valid language aliases.</param>
+        /// <param name="classPrefix">If not null or whitespace, this string will be appended to HighlightJS classes.</param>
         /// <returns>Highlighted <paramref name="code"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="code"/> is null.</exception>
         /// <exception cref="NodeInvocationException">Thrown if a Node error occurs.</exception>
-        public virtual async Task<string> HighlightAsync(string languageNameOrAlias,
-            string code,
-            bool ignoreIllegals = true,
-            string tabReplace = null,
-            bool useBR = false,
+        public virtual async Task<string> HighlightAsync(string code,
+            string languageAlias,
             string classPrefix = "hljs-")
         {
             if (code == null)
             {
-                throw new ArgumentNullException(Strings.Exception_ParameterCannotBeNull, nameof(code));
+                throw new ArgumentNullException(nameof(code), Strings.Exception_ParameterCannotBeNull);
             }
 
             if (string.IsNullOrWhiteSpace(code))
@@ -54,16 +49,19 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS
                 return code;
             }
 
+            if (!await IsValidLanguageAliasAsync(languageAlias).ConfigureAwait(false))
+            {
+                // languageAlias is invalid
+                throw new ArgumentException(string.Format(Strings.Exception_InvalidHighlightJSLanguageAlias, languageAlias));
+            }
+
             try
             {
                 return await _nodeServices.InvokeExportAsync<string>(BUNDLE,
                     "highlight",
                     code,
-                    languageNameOrAlias,
-                    ignoreIllegals,
-                    tabReplace,
-                    useBR,
-                    classPrefix).ConfigureAwait(false);
+                    languageAlias,
+                    string.IsNullOrWhiteSpace(classPrefix) ? "" : classPrefix).ConfigureAwait(false);
             }
             catch (AggregateException exception)
             {
@@ -76,59 +74,24 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS
         }
 
         /// <summary>
-        /// 
+        /// Returns true if <paramref name="languageAlias"/> is a valid HighlightJS language alias. Otherwise, returns false.
         /// </summary>
-        /// <param name="code"></param>
-        /// <param name="languageSubset"></param>
-        /// <param name="tabReplace"></param>
-        /// <param name="useBR"></param>
-        /// <param name="classPrefix"></param>
-        /// <returns></returns>
-        public virtual async Task<HighlightAutoResult> HighlightAutoAsync(string code,
-            string[] languageSubset,
-            string tabReplace = null,
-            bool useBR = false,
-            string classPrefix = "hljs-")
-        {
-            if (code == null || string.IsNullOrWhiteSpace(code))
-            {
-                throw new ArgumentNullException(Strings.Exception_ParameterCannotBeNull, nameof(code));
-            }
-
-            if (string.IsNullOrWhiteSpace(code))
-            {
-                // Nothing to highlight
-                return new HighlightAutoResult(0, code, null, null);
-            }
-
-            try
-            {
-                return await _nodeServices.InvokeExportAsync<HighlightAutoResult>(BUNDLE,
-                    "highlightAuto",
-                    code,
-                    tabReplace,
-                    useBR,
-                    classPrefix).ConfigureAwait(false);
-            }
-            catch (AggregateException exception)
-            {
-                if (exception.InnerException is NodeInvocationException)
-                {
-                    throw exception.InnerException;
-                }
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Returns a list containing all HighlightJS language names (does not include aliases).
-        /// </summary>
+        /// <param name="languageAlias">Language alias to validate. Visit http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#language-names-and-aliases 
+        /// for the full list of valid language aliases.</param>
+        /// <returns>true if <paramref name="languageAlias"/> is a valid HighlightJS language alias. Otherwise, false.</returns>
         /// <exception cref="NodeInvocationException">Thrown if a Node error occurs.</exception>
-        public virtual async Task<string[]> GetLanguageNamesAsync()
+        public virtual async Task<bool> IsValidLanguageAliasAsync(string languageAlias)
         {
+            if (string.IsNullOrWhiteSpace(languageAlias))
+            {
+                return false;
+            }
+
             try
             {
-                return await _languageNames.Value.ConfigureAwait(false);
+                HashSet<string> aliases = await _aliases.Value.ConfigureAwait(false);
+
+                return aliases.Contains(languageAlias);
             }
             catch (AggregateException exception)
             {
@@ -144,9 +107,11 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS
         /// Required for lazy initialization.
         /// </summary>
         /// <returns></returns>
-        internal virtual Task<string[]> LanguageNamesFactoryAsync()
+        internal virtual async Task<HashSet<string>> GetAliasesAsync()
         {
-            return _nodeServices.InvokeExportAsync<string[]>(BUNDLE, "getLanguageNames");
+            string[] aliases = await _nodeServices.InvokeExportAsync<string[]>(BUNDLE, "getAliases").ConfigureAwait(false);
+
+            return new HashSet<string>(aliases);
         }
 
         public void Dispose()

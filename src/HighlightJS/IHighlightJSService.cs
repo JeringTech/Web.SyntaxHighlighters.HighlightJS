@@ -4,13 +4,10 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS
 {
     public interface IHighlightJSService
     {
-        Task<string> HighlightAsync(string languageNameOrAlias,
-            string code,
-            bool ignoreIllegals = true,
-            string tabReplace = null,
-            bool useBR = false,
+        Task<string> HighlightAsync(string code,
+            string languageAlias,
             string classPrefix = "hljs-");
 
-        Task<bool> IsValidLanguageNameOrAliasAsync(string languageAlias);
+        Task<bool> IsValidLanguageAliasAsync(string languageAlias);
     }
 }

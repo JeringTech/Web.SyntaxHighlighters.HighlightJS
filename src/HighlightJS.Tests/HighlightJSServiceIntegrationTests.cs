@@ -12,27 +12,27 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
         private ServiceProvider _serviceProvider;
 
         [Theory]
-        [MemberData(nameof(Highlight_HighlightsCode_Data))]
-        public void Highlight_HighlightsCode(string dummyCode, string dummyLanguageAlias, string expectedResult)
+        [MemberData(nameof(HighlightAsync_HighlightsCode_Data))]
+        public void HighlightAsync_HighlightsCode(string dummyCode, string dummyLanguageName, string expectedResult)
         {
             // Arrange 
             IHighlightJSService highlightJSService = CreateHighlightJSService();
 
             // Act
-            string result = highlightJSService.HighlightAsync(dummyCode, dummyLanguageAlias).Result;
+            string result = highlightJSService.HighlightAsync(dummyCode, dummyLanguageName).Result;
 
             // Assert
             Assert.Equal(expectedResult, result, ignoreLineEndingDifferences: true);
         }
 
-        public static IEnumerable<object[]> Highlight_HighlightsCode_Data()
+        public static IEnumerable<object[]> HighlightAsync_HighlightsCode_Data()
         {
             return new object[][]
             {
                 // javascript
                 new object[]
                 {
-                    @"  function exampleFunction(arg) {
+                    @"function exampleFunction(arg) {
     // Example comment
     return arg + 'dummyString';
 }",
@@ -46,7 +46,7 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
                 // csharp
                 new object[]
                 {
-                    @"  public string ExampleFunction(string arg)
+                    @"public string ExampleFunction(string arg)
 {
     // Example comment
     return arg + ""dummyString"";
@@ -62,33 +62,74 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
         }
 
         [Theory]
-        [MemberData(nameof(IsValidLanguageAlias_ChecksIfLanguageAliasIsValid_Data))]
-        public void IsValidLanguageAlias_ChecksIfLanguageAliasIsValid(string dummyLanguageAlias, bool expectedResult)
+        [MemberData(nameof(HighlightAsync_ReplacesTabsWithTabReplaceIfTabReplaceIsNotNullOtherwiseDoesNotReplaceTabs_Data))]
+        public void HighlightAsync_AppendsClassPrefixToClassesIfClassPrefixIsNotNullOtherwiseDoesNotAppendAnything(string dummyClassPrefix, string expectedResult)
         {
             // Arrange
+            const string dummyCode = @"public string ExampleFunction(string arg)
+{
+    // Example comment
+    return arg + ""dummyString"";
+}";
+            const string dummyLanguageName = "csharp";
             IHighlightJSService highlightJSService = CreateHighlightJSService();
 
             // Act
-            bool result = highlightJSService.IsValidLanguageNameOrAliasAsync(dummyLanguageAlias).Result;
+            string result = highlightJSService.HighlightAsync(dummyCode, dummyLanguageName, dummyClassPrefix).Result;
 
             // Assert
             Assert.Equal(expectedResult, result);
         }
 
-        public static IEnumerable<object[]> IsValidLanguageAlias_ChecksIfLanguageAliasIsValid_Data()
+        public static IEnumerable<object[]> HighlightAsync_ReplacesTabsWithTabReplaceIfTabReplaceIsNotNullOtherwiseDoesNotReplaceTabs_Data()
         {
             return new object[][]
             {
-                // Alias
+                new object[]{
+                    null,
+                    @"<span class=""function""><span class=""keyword"">public</span> <span class=""keyword"">string</span> <span class=""title"">ExampleFunction</span>(<span class=""params""><span class=""keyword"">string</span> arg</span>)
+</span>{
+    <span class=""comment"">// Example comment</span>
+    <span class=""keyword"">return</span> arg + <span class=""string"">""dummyString""</span>;
+}"
+                },
+                new object[]{
+                    "test-",
+                    @"<span class=""test-function""><span class=""test-keyword"">public</span> <span class=""test-keyword"">string</span> <span class=""test-title"">ExampleFunction</span>(<span class=""test-params""><span class=""test-keyword"">string</span> arg</span>)
+</span>{
+    <span class=""test-comment"">// Example comment</span>
+    <span class=""test-keyword"">return</span> arg + <span class=""test-string"">""dummyString""</span>;
+}"
+                }
+            };
+        }
+
+        [Theory]
+        [MemberData(nameof(IsValidLanguageAliasAsync_ChecksIfLanguageAliasIsValid_Data))]
+        public void IsValidLanguageAliasAsync_ChecksIfLanguageAliasIsValid(string dummyLanguageAlias, bool expectedResult)
+        {
+            // Arrange
+            IHighlightJSService highlightJSService = CreateHighlightJSService();
+
+            // Act
+            bool result = highlightJSService.IsValidLanguageAliasAsync(dummyLanguageAlias).Result;
+
+            // Assert
+            Assert.Equal(expectedResult, result);
+        }
+
+        public static IEnumerable<object[]> IsValidLanguageAliasAsync_ChecksIfLanguageAliasIsValid_Data()
+        {
+            return new object[][]
+            {
                 new object[]
                 {
-                    "html", true
+                    "as", true
                 },
 
-                // Actual language
                 new object[]
                 {
-                    "css", true
+                    "actionscript", true
                 },
 
                 // Non existent language
@@ -109,7 +150,7 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
             services.AddHighlightJS();
             if (Debugger.IsAttached)
             {
-                // Override INodeServices service registered by AddPrism to enable debugging
+                // Override INodeServices service registered by AddHighlightJS to enable debugging
                 services.AddNodeServices(options =>
                 {
                     options.LaunchWithDebugging = true;
