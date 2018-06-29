@@ -151,13 +151,14 @@ If you're curious about why these features have been omitted, the following are 
 
 #### ignore_illegals
 If [ignore_illegals](http://highlightjs.readthedocs.io/en/latest/api.html#highlight-name-value-ignore-illegals-continuation) is false, HighlightJS throws an error when invalid syntax is detected. 
-This feature is prone to reporting false positives, not least because language definitions aren't always up to date. If accurate this feature would be useful for identifying mistakes
-in code snippets. A valiant attempt by HighlightJS, but too flaky for real world use.
+This feature is prone to reporting false positives, not least because language definitions aren't always up to date. If accurate, this feature would be useful for identifying mistakes
+in code snippets; it is a valiant attempt by HighlightJS, but too flaky for real world use.
 
 #### Automatic Language Detection
-HighlightJS has an automatic language detection feature. It works by highlighting code using every language definition, then ranking languages based on 
+HighlightJS has an [automatic language detection](http://highlightjs.readthedocs.io/en/latest/api.html#highlightauto-value-languagesubset) feature. It works by 
+highlighting code using every language definition, then ranking languages based on 
 the number of matches for each language definition (a language definition is essentially a set of regex expressions). For shortish snippets, this feature is quite inaccurate.
-Also, this feature isn't very performant. Again, a valiant attempt, but too flaky for real world use.
+Additionally, this feature isn't very performant. Again, it is a valiant attempt by HighlightJS, but too flaky for real world use.
 
 ## Building
 This project can be built using Visual Studio 2017.
