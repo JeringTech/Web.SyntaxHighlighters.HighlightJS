@@ -145,20 +145,26 @@ public virtual async Task<bool> IsValidLanguageAliasAsync(string languageAlias)
 bool isValid = await highlightJSService.IsValidLanguageAliasAsync("csharp");
 ```
 
-### API Notes
-If you've used the javascript HighlightJS library before, you might have noticed that some of its features have been omitted.
-If you're curious about why these features have been omitted, the following are some of their issues:
+## API Notes
+If you've used the javascript HighlightJS library before, you might have noticed that some of its features have been omitted in this
+wrapper. The following are the reasons for their omittance:
 
 #### ignore_illegals
-If [ignore_illegals](http://highlightjs.readthedocs.io/en/latest/api.html#highlight-name-value-ignore-illegals-continuation) is false, HighlightJS throws an error when invalid syntax is detected. 
-This feature is prone to reporting false positives, not least because language definitions aren't always up to date. If accurate, this feature would be useful for identifying mistakes
-in code snippets; it is a valiant attempt by HighlightJS, but too flaky for real world use.
+If [ignore_illegals](http://highlightjs.readthedocs.io/en/latest/api.html#highlight-name-value-ignore-illegals-continuation) is false, the javascript HighlightJS library 
+throws an error when invalid syntax is detected. 
+This feature can be inaccurate because language definitions aren't always up to date.
 
 #### Automatic Language Detection
-HighlightJS has an [automatic language detection](http://highlightjs.readthedocs.io/en/latest/api.html#highlightauto-value-languagesubset) feature. It works by 
+The javascript HighlightJS library has an [automatic language detection](http://highlightjs.readthedocs.io/en/latest/api.html#highlightauto-value-languagesubset) feature. It works by 
 highlighting code using every language definition, then ranking languages based on 
-the number of matches for each language definition (a language definition is essentially a set of regex expressions). For shortish snippets, this feature is quite inaccurate.
-Additionally, this feature isn't very performant. Again, it is a valiant attempt by HighlightJS, but too flaky for real world use.
+the number of matches for each language definition (a language definition is essentially a set of regex expressions). 
+This feature can be inaccurate, especially for short snippets.
+
+#### Continuation
+The javascript HighlightJS library has a [continuation](http://highlightjs.readthedocs.io/en/latest/api.html#highlight-name-value-ignore-illegals-continuation) feature. Essentially,
+it returns the context of every highlight call, allowing subsequent calls to continue highlighting based on the context of an earlier call:
+making multiple highlight calls with the continuation feature is equivalent to concatenating the code and making a single highlight call. For this wrapper,
+a single highlight call is far more performant since it minimizes time spent on object marshalling and inter-process communication.
 
 ## Building
 This project can be built using Visual Studio 2017.
