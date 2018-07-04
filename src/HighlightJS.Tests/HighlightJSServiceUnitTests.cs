@@ -19,7 +19,9 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
             HighlightJSService highlightJSService = CreateHighlightJSService();
 
             // Act and assert
-            ArgumentNullException result = await Assert.ThrowsAsync<ArgumentNullException>(() => highlightJSService.HighlightAsync(null, null)).ConfigureAwait(false);
+            ArgumentNullException result = await Assert.
+                ThrowsAsync<ArgumentNullException>(async () => await highlightJSService.HighlightAsync(null, null).ConfigureAwait(false)).
+                ConfigureAwait(false);
             Assert.Equal($"{Strings.Exception_ParameterCannotBeNull}\nParameter name: code", result.Message, ignoreLineEndingDifferences: true);
         }
 
@@ -63,7 +65,9 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
             mockHighlightJSService.Setup(p => p.IsValidLanguageAliasAsync(dummyLanguageAlias)).ReturnsAsync(false);
 
             // Act and assert
-            ArgumentException result = await Assert.ThrowsAsync<ArgumentException>(() => mockHighlightJSService.Object.HighlightAsync(dummyCode, dummyLanguageAlias)).ConfigureAwait(false);
+            ArgumentException result = await Assert.
+                ThrowsAsync<ArgumentException>(async () => await mockHighlightJSService.Object.HighlightAsync(dummyCode, dummyLanguageAlias).ConfigureAwait(false)).
+                ConfigureAwait(false);
             Assert.Equal(result.Message, string.Format(Strings.Exception_InvalidHighlightJSLanguageAlias, dummyLanguageAlias));
             _mockRepository.VerifyAll();
         }
@@ -203,7 +207,9 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
             HighlightJSService highlightJSService = CreateHighlightJSService(mockNodeServices.Object);
 
             // Act and assert
-            NodeInvocationException result = await Assert.ThrowsAsync<NodeInvocationException>(() => highlightJSService.IsValidLanguageAliasAsync(dummyLanguageAlias)).ConfigureAwait(false);
+            NodeInvocationException result = await Assert.
+                ThrowsAsync<NodeInvocationException>(async () => await highlightJSService.IsValidLanguageAliasAsync(dummyLanguageAlias)).
+                ConfigureAwait(false);
             Assert.Same(dummyNodeInvocationException, result);
             _mockRepository.VerifyAll();
         }

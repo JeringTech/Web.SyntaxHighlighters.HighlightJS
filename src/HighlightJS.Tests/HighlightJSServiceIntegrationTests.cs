@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
@@ -13,13 +14,13 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
 
         [Theory]
         [MemberData(nameof(HighlightAsync_HighlightsCode_Data))]
-        public void HighlightAsync_HighlightsCode(string dummyCode, string dummyLanguageName, string expectedResult)
+        public async Task HighlightAsync_HighlightsCode(string dummyCode, string dummyLanguageName, string expectedResult)
         {
             // Arrange 
-            IHighlightJSService highlightJSService = CreateHighlightJSService();
+            IHighlightJSService highlightJSService = await CreateHighlightJSService();
 
             // Act
-            string result = highlightJSService.HighlightAsync(dummyCode, dummyLanguageName).Result;
+            string result = await highlightJSService.HighlightAsync(dummyCode, dummyLanguageName).ConfigureAwait(false);
 
             // Assert
             Assert.Equal(expectedResult, result, ignoreLineEndingDifferences: true);
@@ -63,7 +64,7 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
 
         [Theory]
         [MemberData(nameof(HighlightAsync_ReplacesTabsWithTabReplaceIfTabReplaceIsNotNullOtherwiseDoesNotReplaceTabs_Data))]
-        public void HighlightAsync_AppendsClassPrefixToClassesIfClassPrefixIsNotNullOtherwiseDoesNotAppendAnything(string dummyClassPrefix, string expectedResult)
+        public async Task HighlightAsync_AppendsClassPrefixToClassesIfClassPrefixIsNotNullOtherwiseDoesNotAppendAnything(string dummyClassPrefix, string expectedResult)
         {
             // Arrange
             const string dummyCode = @"public string ExampleFunction(string arg)
@@ -72,10 +73,10 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
     return arg + ""dummyString"";
 }";
             const string dummyLanguageName = "csharp";
-            IHighlightJSService highlightJSService = CreateHighlightJSService();
+            IHighlightJSService highlightJSService = await CreateHighlightJSService();
 
             // Act
-            string result = highlightJSService.HighlightAsync(dummyCode, dummyLanguageName, dummyClassPrefix).Result;
+            string result = await highlightJSService.HighlightAsync(dummyCode, dummyLanguageName, dummyClassPrefix).ConfigureAwait(false);
 
             // Assert
             Assert.Equal(expectedResult, result);
@@ -106,13 +107,13 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
 
         [Theory]
         [MemberData(nameof(IsValidLanguageAliasAsync_ChecksIfLanguageAliasIsValid_Data))]
-        public void IsValidLanguageAliasAsync_ChecksIfLanguageAliasIsValid(string dummyLanguageAlias, bool expectedResult)
+        public async Task IsValidLanguageAliasAsync_ChecksIfLanguageAliasIsValid(string dummyLanguageAlias, bool expectedResult)
         {
             // Arrange
-            IHighlightJSService highlightJSService = CreateHighlightJSService();
+            IHighlightJSService highlightJSService = await CreateHighlightJSService();
 
             // Act
-            bool result = highlightJSService.IsValidLanguageAliasAsync(dummyLanguageAlias).Result;
+            bool result = await highlightJSService.IsValidLanguageAliasAsync(dummyLanguageAlias).ConfigureAwait(false);
 
             // Assert
             Assert.Equal(expectedResult, result);
@@ -140,7 +141,7 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
             };
         }
 
-        private IHighlightJSService CreateHighlightJSService()
+        private async Task<IHighlightJSService> CreateHighlightJSService()
         {
             // Since a new container is created for each test, a new INodeServices instance is created as well.
             // This means that a new node process is started and then disposed of for each test. 
@@ -164,7 +165,7 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
                 INodeServices nodeServices = _serviceProvider.GetRequiredService<INodeServices>();
                 try
                 {
-                    int dummy = nodeServices.InvokeAsync<int>("").Result;
+                    int dummy = await nodeServices.InvokeAsync<int>("").ConfigureAwait(false);
                 }
                 catch
                 {
