@@ -1,40 +1,46 @@
-﻿using Microsoft.AspNetCore.NodeServices;
-using Microsoft.AspNetCore.NodeServices.HostingModels;
+﻿using Jering.JavascriptUtils.NodeJS;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS
 {
+    /// <summary>
+    /// The default implementation of <see cref="IHighlightJSService"/>. This implementation uses <see cref="INodeJSService"/> to send HighlightJS syntax highlighting 
+    /// requests to a NodeJS instance.
+    /// </summary>
     public class HighlightJSService : IHighlightJSService, IDisposable
     {
-        internal const string BUNDLE = "JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.bundle.js";
-        private readonly INodeServices _nodeServices;
+        /// <summary>
+        /// The identifier used to cache the HighlightJS bundle in NodeJS. This identifier must be unique, so the namespace is used.
+        /// </summary>
+        internal static string MODULE_CACHE_IDENTIFIER = typeof(HighlightJSService).Namespace;
+
+        internal const string BUNDLE_NAME = "bundle.js";
+        private readonly INodeJSService _nodeJSService;
+        private readonly IEmbeddedResourcesService _embeddedResourcesService;
 
         /// <summary>
-        /// Use <see cref="Lazy{T}"/> for thread safe lazy initialization since invoking a JS method through NodeServices
+        /// Use <see cref="Lazy{T}"/> for thread safe lazy initialization since invoking a JS method through NodeJSService
         /// can take several hundred milliseconds. Wrap in a <see cref="Task{T}"/> for asynchrony.
         /// More information on AsyncLazy - https://blogs.msdn.microsoft.com/pfxteam/2011/01/15/asynclazyt/.
         /// </summary>
         private readonly Lazy<Task<HashSet<string>>> _aliases;
 
-        public HighlightJSService(INodeServices nodeServices)
+        /// <summary>
+        /// Creates a <see cref="HighlightJSService"/> instance.
+        /// </summary>
+        /// <param name="nodeJSService"></param>
+        /// <param name="embeddedResourcesService"></param>
+        public HighlightJSService(INodeJSService nodeJSService, IEmbeddedResourcesService embeddedResourcesService)
         {
-            _nodeServices = nodeServices;
+            _nodeJSService = nodeJSService;
+            _embeddedResourcesService = embeddedResourcesService;
             _aliases = new Lazy<Task<HashSet<string>>>(GetAliasesAsync);
         }
 
-        /// <summary>
-        /// Highlights <paramref name="code"/>.
-        /// </summary>
-        /// <param name="code">Code to highlight.</param>
-        /// <param name="languageAlias">A HighlightJS language alias. Visit http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#language-names-and-aliases 
-        /// for the list of valid language aliases.</param>
-        /// <param name="classPrefix">If not null or whitespace, this string will be appended to HighlightJS classes.</param>
-        /// <returns>Highlighted <paramref name="code"/>.</returns>
-        /// <exception cref="ArgumentNullException">Thrown if <paramref name="code"/> is null.</exception>
-        /// <exception cref="ArgumentException">Thrown if <paramref name="languageAlias"/> is not a valid HighlightJS language alias.</exception>
-        /// <exception cref="NodeInvocationException">Thrown if a Node error occurs.</exception>
+        /// <inheritdoc />
         public virtual async Task<string> HighlightAsync(string code,
             string languageAlias,
             string classPrefix = "hljs-")
@@ -56,68 +62,57 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS
                 throw new ArgumentException(string.Format(Strings.Exception_InvalidHighlightJSLanguageAlias, languageAlias));
             }
 
-            try
+            var args = new object[] { code, languageAlias, string.IsNullOrWhiteSpace(classPrefix) ? "" : classPrefix };
+            // Invoke from cache
+            (bool success, string result) = await _nodeJSService.TryInvokeFromCacheAsync<string>(MODULE_CACHE_IDENTIFIER, "highlight", args).ConfigureAwait(false);
+            if (success)
             {
-                return await _nodeServices.InvokeExportAsync<string>(BUNDLE,
-                    "highlight",
-                    code,
-                    languageAlias,
-                    string.IsNullOrWhiteSpace(classPrefix) ? "" : classPrefix).ConfigureAwait(false);
+                return result;
             }
-            catch (AggregateException exception)
+
+            // Invoke from stream since module is not cached
+            using (Stream moduleStream = _embeddedResourcesService.ReadAsStream(typeof(HighlightJSService).Assembly, BUNDLE_NAME))
             {
-                if (exception.InnerException is NodeInvocationException)
-                {
-                    throw exception.InnerException;
-                }
-                throw;
+                // Invoking from stream is 2+x faster than reading the resource as a string and invoking as string. This is because invoking as string causes almost 
+                // 1000x more memory to be allocated, resulting in gen 1+ gcs.
+                return await _nodeJSService.InvokeFromStreamAsync<string>(moduleStream, MODULE_CACHE_IDENTIFIER, "highlight", args).ConfigureAwait(false);
             }
         }
 
-        /// <summary>
-        /// Returns true if <paramref name="languageAlias"/> is a valid HighlightJS language alias. Otherwise, returns false.
-        /// </summary>
-        /// <param name="languageAlias">Language alias to validate. Visit http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#language-names-and-aliases 
-        /// for the list of valid language aliases.</param>
-        /// <returns>true if <paramref name="languageAlias"/> is a valid HighlightJS language alias. Otherwise, false.</returns>
-        /// <exception cref="NodeInvocationException">Thrown if a Node error occurs.</exception>
-        public virtual async Task<bool> IsValidLanguageAliasAsync(string languageAlias)
+        /// <inheritdoc />
+        public virtual async ValueTask<bool> IsValidLanguageAliasAsync(string languageAlias)
         {
             if (string.IsNullOrWhiteSpace(languageAlias))
             {
                 return false;
             }
 
-            try
-            {
-                HashSet<string> aliases = await _aliases.Value.ConfigureAwait(false);
+            HashSet<string> aliases = await _aliases.Value.ConfigureAwait(false);
 
-                return aliases.Contains(languageAlias);
-            }
-            catch (AggregateException exception)
-            {
-                if (exception.InnerException is NodeInvocationException)
-                {
-                    throw exception.InnerException;
-                }
-                throw;
-            }
+            return aliases.Contains(languageAlias);
         }
 
         /// <summary>
         /// Required for lazy initialization.
         /// </summary>
-        /// <returns></returns>
         internal virtual async Task<HashSet<string>> GetAliasesAsync()
         {
-            string[] aliases = await _nodeServices.InvokeExportAsync<string[]>(BUNDLE, "getAliases").ConfigureAwait(false);
-
+            string[] aliases;
+            // GetAliasesAsync should only ever be called once, before any highlighting is done by NodeJS. So take this oppurtunity to 
+            // cache the module.
+            using (Stream moduleStream = _embeddedResourcesService.ReadAsStream(typeof(HighlightJSService).Assembly, BUNDLE_NAME))
+            {
+                aliases = await _nodeJSService.InvokeFromStreamAsync<string[]>(moduleStream, MODULE_CACHE_IDENTIFIER, "getAliases").ConfigureAwait(false);
+            }
             return new HashSet<string>(aliases);
         }
 
+        /// <summary>
+        /// Disposes of the instance.
+        /// </summary>
         public void Dispose()
         {
-            _nodeServices.Dispose();
+            _nodeJSService.Dispose();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.NodeServices;
+﻿using Jering.JavascriptUtils.NodeJS;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
         public async Task HighlightAsync_HighlightsCode(string dummyCode, string dummyLanguageName, string expectedResult)
         {
             // Arrange 
-            IHighlightJSService highlightJSService = await CreateHighlightJSService();
+            IHighlightJSService highlightJSService = CreateHighlightJSService();
 
             // Act
             string result = await highlightJSService.HighlightAsync(dummyCode, dummyLanguageName).ConfigureAwait(false);
@@ -73,7 +73,7 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
     return arg + ""dummyString"";
 }";
             const string dummyLanguageName = "csharp";
-            IHighlightJSService highlightJSService = await CreateHighlightJSService();
+            IHighlightJSService highlightJSService = CreateHighlightJSService();
 
             // Act
             string result = await highlightJSService.HighlightAsync(dummyCode, dummyLanguageName, dummyClassPrefix).ConfigureAwait(false);
@@ -110,7 +110,7 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
         public async Task IsValidLanguageAliasAsync_ChecksIfLanguageAliasIsValid(string dummyLanguageAlias, bool expectedResult)
         {
             // Arrange
-            IHighlightJSService highlightJSService = await CreateHighlightJSService();
+            IHighlightJSService highlightJSService = CreateHighlightJSService();
 
             // Act
             bool result = await highlightJSService.IsValidLanguageAliasAsync(dummyLanguageAlias).ConfigureAwait(false);
@@ -141,48 +141,24 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
             };
         }
 
-        private async Task<IHighlightJSService> CreateHighlightJSService()
+        private IHighlightJSService CreateHighlightJSService()
         {
-            // Since a new container is created for each test, a new INodeServices instance is created as well.
-            // This means that a new node process is started and then disposed of for each test. 
-            // It is cleaner to do things this way, but reconsider if performance becomes an issue.
             var services = new ServiceCollection();
 
             services.AddHighlightJS();
             if (Debugger.IsAttached)
             {
-                // Override INodeServices service registered by AddHighlightJS to enable debugging
-                services.AddNodeServices(options =>
-                {
-                    options.LaunchWithDebugging = true;
-                    options.InvocationTimeoutMilliseconds = 99999999; // -1 doesn't work, once a js breakpoint is hit, the debugger disconnects
-                });
-
-                _serviceProvider = services.BuildServiceProvider();
-
-                // InvokeAsync implicitly starts up a node instance. Adding a break point after InvokeAsync allows
-                // chrome to connect to the debugger
-                INodeServices nodeServices = _serviceProvider.GetRequiredService<INodeServices>();
-                try
-                {
-                    int dummy = await nodeServices.InvokeAsync<int>("").ConfigureAwait(false);
-                }
-                catch
-                {
-                    // Do nothing
-                }
+                services.Configure<NodeJSProcessOptions>(options => options.NodeAndV8Options = "--inspect-brk");
+                services.Configure<OutOfProcessNodeJSServiceOptions>(options => options.TimeoutMS = -1);
             }
-            else
-            {
-                _serviceProvider = services.BuildServiceProvider();
-            }
+            _serviceProvider = services.BuildServiceProvider();
 
             return _serviceProvider.GetRequiredService<IHighlightJSService>();
         }
 
         public void Dispose()
         {
-            // Ensure that NodeServices gets disposed
+            // Ensure that NodeJSService gets disposed
             _serviceProvider?.Dispose();
         }
     }

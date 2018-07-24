@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.NodeServices;
-using Microsoft.AspNetCore.NodeServices.HostingModels;
+﻿using Jering.JavascriptUtils.NodeJS;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -73,41 +74,60 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
         }
 
         [Fact]
-        public async Task HighlightAsync_ThrowsExceptionIfANodeErrorOccurs()
-        {
-            // Arrange
-            const string dummyCode = "dummyCode";
-            const string dummyLanguageAlias = "dummyLanguageAlias";
-            const string dummyClassPrefix = "dummyClassPrefix";
-            var dummyNodeInvocationException = new NodeInvocationException("", "");
-            var dummyAggregateException = new AggregateException("", dummyNodeInvocationException);
-            Mock<INodeServices> mockNodeServices = _mockRepository.Create<INodeServices>();
-            mockNodeServices.
-                Setup(n => n.InvokeExportAsync<string>(HighlightJSService.BUNDLE, "highlight", dummyCode, dummyLanguageAlias, dummyClassPrefix)).
-                ThrowsAsync(dummyAggregateException);
-            Mock<HighlightJSService> mockHighlightJSService = CreateMockHighlightJSService(mockNodeServices.Object);
-            mockHighlightJSService.CallBase = true;
-            mockHighlightJSService.Setup(p => p.IsValidLanguageAliasAsync(dummyLanguageAlias)).ReturnsAsync(true);
-
-            // Act and assert
-            NodeInvocationException result = await Assert.
-                ThrowsAsync<NodeInvocationException>(() => mockHighlightJSService.Object.HighlightAsync(dummyCode, dummyLanguageAlias, dummyClassPrefix)).
-                ConfigureAwait(false);
-            Assert.Same(dummyNodeInvocationException, result);
-            _mockRepository.VerifyAll();
-        }
-
-        [Fact]
-        public async Task HighlightAsync_IfSuccessfulInvokesHighlightInInteropJSAndReturnsHighlightedCode()
+        public async Task HighlightAsync_InvokesFromCacheIfModuleIsCached()
         {
             // Arrange
             const string dummyCode = "dummyCode";
             const string dummyHighlightedCode = "dummyHighlightedCode";
             const string dummyLanguageAlias = "dummyLanguageAlias";
             const string dummyClassPrefix = "dummyClassPrefix";
-            Mock<INodeServices> mockNodeServices = _mockRepository.Create<INodeServices>();
-            mockNodeServices.Setup(n => n.InvokeExportAsync<string>(HighlightJSService.BUNDLE, "highlight", dummyCode, dummyLanguageAlias, dummyClassPrefix)).ReturnsAsync(dummyHighlightedCode);
-            Mock<HighlightJSService> mockHighlightJSService = CreateMockHighlightJSService(mockNodeServices.Object);
+            Mock<INodeJSService> mockNodeJSService = _mockRepository.Create<INodeJSService>();
+            mockNodeJSService.
+                Setup(n => n.TryInvokeFromCacheAsync<string>(HighlightJSService.MODULE_CACHE_IDENTIFIER,
+                    "highlight",
+                    It.Is<object[]>(arr => arr[0].Equals(dummyCode) && arr[1].Equals(dummyLanguageAlias) && arr[2].Equals(dummyClassPrefix)),
+                    default(CancellationToken))).
+                ReturnsAsync((true, dummyHighlightedCode));
+            Mock<HighlightJSService> mockHighlightJSService = CreateMockHighlightJSService(mockNodeJSService.Object);
+            mockHighlightJSService.CallBase = true;
+            mockHighlightJSService.Setup(p => p.IsValidLanguageAliasAsync(dummyLanguageAlias)).ReturnsAsync(true);
+
+            // Act
+            string result = await mockHighlightJSService.Object.HighlightAsync(dummyCode, dummyLanguageAlias, dummyClassPrefix).ConfigureAwait(false);
+
+            // Assert
+            Assert.Equal(dummyHighlightedCode, result);
+            _mockRepository.VerifyAll();
+        }
+
+        [Fact]
+        public async Task HighlightAsync_InvokesFromStreamIfModuleIsNotCached()
+        {
+            // Arrange
+            const string dummyCode = "dummyCode";
+            const string dummyLanguageAlias = "dummyLanguageAlias";
+            const string dummyHighlightedCode = "dummyHighlightedCode";
+            const string dummyClassPrefix = "dummyClassPrefix";
+            var dummyStream = new MemoryStream();
+            Mock<IEmbeddedResourcesService> mockEmbeddedResourcesService = _mockRepository.Create<IEmbeddedResourcesService>();
+            mockEmbeddedResourcesService.
+                Setup(e => e.ReadAsStream(typeof(HighlightJSService).Assembly, HighlightJSService.BUNDLE_NAME)).
+                Returns(dummyStream);
+            Mock<INodeJSService> mockNodeJSService = _mockRepository.Create<INodeJSService>();
+            mockNodeJSService.
+                Setup(n => n.TryInvokeFromCacheAsync<string>(HighlightJSService.MODULE_CACHE_IDENTIFIER,
+                    "highlight",
+                    It.Is<object[]>(arr => arr[0].Equals(dummyCode) && arr[1].Equals(dummyLanguageAlias) && arr[2].Equals(dummyClassPrefix)),
+                    default(CancellationToken))).
+                ReturnsAsync((false, null));
+            mockNodeJSService.
+                Setup(n => n.InvokeFromStreamAsync<string>(dummyStream,
+                    HighlightJSService.MODULE_CACHE_IDENTIFIER,
+                    "highlight",
+                    It.Is<object[]>(arr => arr[0].Equals(dummyCode) && arr[1].Equals(dummyLanguageAlias) && arr[2].Equals(dummyClassPrefix)),
+                    default(CancellationToken))).
+                ReturnsAsync(dummyHighlightedCode);
+            Mock<HighlightJSService> mockHighlightJSService = CreateMockHighlightJSService(mockNodeJSService.Object, mockEmbeddedResourcesService.Object);
             mockHighlightJSService.CallBase = true;
             mockHighlightJSService.Setup(p => p.IsValidLanguageAliasAsync(dummyLanguageAlias)).ReturnsAsync(true);
 
@@ -160,9 +180,21 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
             bool expectedResult)
         {
             // Arrange
-            Mock<INodeServices> mockNodeServices = _mockRepository.Create<INodeServices>();
-            mockNodeServices.Setup(n => n.InvokeExportAsync<string[]>(HighlightJSService.BUNDLE, "getAliases")).ReturnsAsync(dummyAliases);
-            HighlightJSService highlightJSService = CreateHighlightJSService(mockNodeServices.Object);
+            var dummyStream = new MemoryStream();
+            Mock<IEmbeddedResourcesService> mockEmbeddedResourcesService = _mockRepository.Create<IEmbeddedResourcesService>();
+            mockEmbeddedResourcesService.
+                Setup(e => e.ReadAsStream(typeof(HighlightJSService).Assembly, HighlightJSService.BUNDLE_NAME)).
+                Returns(dummyStream);
+            Mock<INodeJSService> mockNodeJSService = _mockRepository.Create<INodeJSService>();
+            mockNodeJSService.
+                Setup(n => n.InvokeFromStreamAsync<string[]>(
+                    dummyStream,
+                    HighlightJSService.MODULE_CACHE_IDENTIFIER,
+                    "getAliases",
+                    null,
+                    default(CancellationToken))).
+                ReturnsAsync(dummyAliases);
+            HighlightJSService highlightJSService = CreateHighlightJSService(mockNodeJSService.Object, mockEmbeddedResourcesService.Object);
 
             // Act
             bool result = await highlightJSService.IsValidLanguageAliasAsync(dummyLanguageAlias).ConfigureAwait(false);
@@ -195,33 +227,14 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
             };
         }
 
-        [Fact]
-        public async Task IsValidLanguageAliasAsync_ThrowsExceptionIfANodeErrorOccurs()
+        private HighlightJSService CreateHighlightJSService(INodeJSService nodeJSService = null, IEmbeddedResourcesService embeddedResourcesService = null)
         {
-            // Arrange
-            const string dummyLanguageAlias = "dummyLanguageAlias";
-            var dummyNodeInvocationException = new NodeInvocationException("", "");
-            var dummyAggregateException = new AggregateException("", dummyNodeInvocationException);
-            Mock<INodeServices> mockNodeServices = _mockRepository.Create<INodeServices>();
-            mockNodeServices.Setup(n => n.InvokeExportAsync<string[]>(HighlightJSService.BUNDLE, "getAliases")).ThrowsAsync(dummyAggregateException);
-            HighlightJSService highlightJSService = CreateHighlightJSService(mockNodeServices.Object);
-
-            // Act and assert
-            NodeInvocationException result = await Assert.
-                ThrowsAsync<NodeInvocationException>(async () => await highlightJSService.IsValidLanguageAliasAsync(dummyLanguageAlias)).
-                ConfigureAwait(false);
-            Assert.Same(dummyNodeInvocationException, result);
-            _mockRepository.VerifyAll();
+            return new HighlightJSService(nodeJSService, embeddedResourcesService);
         }
 
-        private HighlightJSService CreateHighlightJSService(INodeServices nodeServices = null)
+        private Mock<HighlightJSService> CreateMockHighlightJSService(INodeJSService nodeJSService = null, IEmbeddedResourcesService embeddedResourcesService = null)
         {
-            return new HighlightJSService(nodeServices);
-        }
-
-        private Mock<HighlightJSService> CreateMockHighlightJSService(INodeServices nodeServices = null)
-        {
-            return _mockRepository.Create<HighlightJSService>(nodeServices);
+            return _mockRepository.Create<HighlightJSService>(nodeJSService, embeddedResourcesService);
         }
     }
 }
