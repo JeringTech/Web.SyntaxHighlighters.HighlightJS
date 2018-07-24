@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS
+namespace Jering.WebUtils.SyntaxHighlighters.HighlightJS
 {
     /// <summary>
     /// Extension methods for setting up HighlightJS in an <see cref="IServiceCollection" />.

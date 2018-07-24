@@ -1,7 +1,7 @@
 # WebUtils.SyntaxHighlighters.HighlightJS
 [![Build status](https://ci.appveyor.com/api/projects/status/wawhrh1nvy5fae2s?svg=true)](https://ci.appveyor.com/project/JeremyTCD/webutils-syntaxhighlighters-highlightjs)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/Pkcs11Interop/Pkcs11Interop/blob/master/LICENSE.md)
-[![NuGet](https://img.shields.io/nuget/vpre/JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.svg?label=nuget)](https://www.nuget.org/packages/JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS/)
+[![NuGet](https://img.shields.io/nuget/vpre/Jering.WebUtils.SyntaxHighlighters.HighlightJS.svg?label=nuget)](https://www.nuget.org/packages/Jering.WebUtils.SyntaxHighlighters.HighlightJS/)
 <!-- TODO tests badge, this service should work - https://github.com/monkey3310/appveyor-shields-badges/blob/master/README.md -->
 
 A C# Wrapper for the Syntax Highlighter, [HighlightJS](http://highlightjs.readthedocs.io/en/latest/index.html). 
@@ -40,11 +40,11 @@ WebUtils.SyntaxHighlighters.HighlightJS allows syntax highlighting to be done by
 ## Installation
 Using Package Manager:
 ```
-PM> Install-Package JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS
+PM> Install-Package Jering.WebUtils.SyntaxHighlighters.HighlightJS
 ```
 Using .Net CLI:
 ```
-> dotnet add package JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS
+> dotnet add package Jering.WebUtils.SyntaxHighlighters.HighlightJS
 ```
 
 ## Usage
@@ -86,9 +86,9 @@ or
 serviceProvider.Dispose(); // Calls Dispose on objects it has instantiated that are disposable
 ```
 `Dispose` kills the spawned Node.js process.
-Note that even if `Dispose` isn't called manually, the service that manages the Node.js process, `INodeService` from [Microsoft.AspNetCore.NodeServices](https://github.com/aspnet/JavaScriptServices/tree/dev/src/Microsoft.AspNetCore.NodeServices), will kill the 
+Note that even if `Dispose` isn't called manually, the service that manages the Node.js process, `INodeService` from [Microsoft.AspNetCore.NodeJSService](https://github.com/aspnet/JavaScriptServices/tree/dev/src/Microsoft.AspNetCore.NodeJSService), will kill the 
 Node.js process when the application shuts down - if the application shuts down gracefully. If the application does not shutdown gracefully, the Node.js process will kill 
-itself when it [detects](https://github.com/aspnet/JavaScriptServices/blob/cf659b3fda367619f3873bd5f0e445698cebe340/src/Microsoft.AspNetCore.NodeServices/TypeScript/Util/ExitWhenParentExits.ts) that its parent has been killed. 
+itself when it [detects](https://github.com/aspnet/JavaScriptServices/blob/cf659b3fda367619f3873bd5f0e445698cebe340/src/Microsoft.AspNetCore.NodeJSService/TypeScript/Util/ExitWhenParentExits.ts) that its parent has been killed. 
 Essentially, manually disposing of `IHighlightJSService` instances is not mandatory.
 
 ### API
@@ -114,7 +114,7 @@ Highlighted code.
   - Thrown if `code` is null.
 - `ArgumentException`
   - Thrown if `languageAlias` is not a valid HighlightJS language alias.
-- `NodeInvocationException`
+- `InvocationException`
   - Thrown if a Node error occurs.
 ##### Example
 ```csharp
@@ -138,7 +138,7 @@ public virtual async Task<bool> IsValidLanguageAliasAsync(string languageAlias)
 ##### Returns
 `true` if `languageAlias` is a valid HighlightJS language alias. Otherwise, `false`.
 ##### Exceptions
-- `NodeInvocationException`
+- `InvocationException`
   - Thrown if a Node error occurs.
 ##### Example
 ```csharp

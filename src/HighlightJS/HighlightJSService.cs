@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS
+namespace Jering.WebUtils.SyntaxHighlighters.HighlightJS
 {
     /// <summary>
     /// The default implementation of <see cref="IHighlightJSService"/>. This implementation uses <see cref="INodeJSService"/> to send HighlightJS syntax highlighting 

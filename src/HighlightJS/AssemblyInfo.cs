@@ -1,4 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
-[assembly: InternalsVisibleTo("JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests")]
+[assembly: InternalsVisibleTo("Jering.WebUtils.SyntaxHighlighters.HighlightJS.Tests")]

@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.Tests
+namespace Jering.WebUtils.SyntaxHighlighters.HighlightJS.Tests
 {
     public class HighlightJSServiceIntegrationTests : IDisposable
     {

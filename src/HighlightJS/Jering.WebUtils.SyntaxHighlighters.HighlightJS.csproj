@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <PackageId>JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS</PackageId>
+        <PackageId>Jering.WebUtils.SyntaxHighlighters.HighlightJS</PackageId>
         <Authors>JeremyTCD</Authors>
         <Description>Perform Syntax Highlighting in .Net Applications Using the Javascript Library, HighlightJS.</Description>
         <Copyright>© JeremyTCD. All rights reserved.</Copyright>
@@ -17,7 +17,7 @@
 
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <CodeAnalysisRuleSet>../../JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS.ruleset</CodeAnalysisRuleSet>
+        <CodeAnalysisRuleSet>../../Jering.WebUtils.SyntaxHighlighters.HighlightJS.ruleset</CodeAnalysisRuleSet>
         <BundleName>bundle.js</BundleName>
         <!-- Exclude Javascript\bin and Javascript\node_modules from project - https://github.com/dotnet/cli/issues/7525 -->
         <DefaultItemExcludes>Javascript\bin\**;Javascript\node_modules\**;$(DefaultItemExcludes)</DefaultItemExcludes>
@@ -41,11 +41,14 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Update="Strings.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>Strings.resx</DependentUpon>
-        </Compile>
+      <Compile Update="Strings.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Strings.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
         <EmbeddedResource Update="Strings.resx">
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>Strings.Designer.cs</LastGenOutput>

@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS
+namespace Jering.WebUtils.SyntaxHighlighters.HighlightJS
 {
     /// <summary>
     /// A service for performing syntax highlighting using HighlightJS.
@@ -31,6 +31,6 @@ namespace JeremyTCD.WebUtils.SyntaxHighlighters.HighlightJS
         /// for the list of valid language aliases.</param>
         /// <returns>true if the specified language alias is a valid HighlightJS language alias. Otherwise, false.</returns>
         /// <exception cref="InvocationException">Thrown if a NodeJS error occurs.</exception>
-        Task<bool> IsValidLanguageAliasAsync(string languageAlias);
+        ValueTask<bool> IsValidLanguageAliasAsync(string languageAlias);
     }
 }
