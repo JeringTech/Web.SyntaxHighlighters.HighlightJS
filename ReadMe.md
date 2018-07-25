@@ -4,7 +4,7 @@
 [![NuGet](https://img.shields.io/nuget/vpre/Jering.WebUtils.SyntaxHighlighters.HighlightJS.svg?label=nuget)](https://www.nuget.org/packages/Jering.WebUtils.SyntaxHighlighters.HighlightJS/)
 <!-- TODO tests badge, this service should work - https://github.com/monkey3310/appveyor-shields-badges/blob/master/README.md -->
 
-A C# Wrapper for the Syntax Highlighter, [HighlightJS](http://highlightjs.readthedocs.io/en/latest/index.html). 
+Perform Syntax Highlighting in .Net Applications Using the Javascript Library, [HighlightJS](http://highlightjs.readthedocs.io/en/latest/index.html). 
 
 ## Overview
 Syntax highlighters add markup to code to facilitate styling. For example, the following code:
@@ -49,7 +49,7 @@ Using .Net CLI:
 
 ## Usage
 ### Creating `IHighlightJSService` in ASP.NET Apps
-ASP.NET Core has a built in dependency injection (DI) system. This system can handle instantiation and disposal of `IHighlightJSService` instances.
+ASP.NET has a built in dependency injection (DI) system. This system can handle instantiation and disposal of `IHighlightJSService` instances.
 Call `AddHighlightJS` in `Startup.ConfigureServices` to register a service for `IHighlightJSService`:
 ```csharp
 public void ConfigureServices(IServiceCollection services)
@@ -86,17 +86,19 @@ or
 serviceProvider.Dispose(); // Calls Dispose on objects it has instantiated that are disposable
 ```
 `Dispose` kills the spawned Node.js process.
-Note that even if `Dispose` isn't called manually, the service that manages the Node.js process, `INodeService` from [Microsoft.AspNetCore.NodeJSService](https://github.com/aspnet/JavaScriptServices/tree/dev/src/Microsoft.AspNetCore.NodeJSService), will kill the 
+Note that even if `Dispose` isn't called manually, the service that manages the Node.js process, `INodeJSService` from [Jering.JavascriptUtils.NodeJS](https://github.com/JeremyTCD/JavascriptUtils.NodeJS), will kill the 
 Node.js process when the application shuts down - if the application shuts down gracefully. If the application does not shutdown gracefully, the Node.js process will kill 
-itself when it [detects](https://github.com/aspnet/JavaScriptServices/blob/cf659b3fda367619f3873bd5f0e445698cebe340/src/Microsoft.AspNetCore.NodeJSService/TypeScript/Util/ExitWhenParentExits.ts) that its parent has been killed. 
+itself when it detects that its parent has been killed. 
 Essentially, manually disposing of `IHighlightJSService` instances is not mandatory.
 
 ### API
 #### IHighlightJSService.HighlightAsync
 ##### Signature
 ```csharp
-public virtual async Task<string> HighlightAsync(string code, string languageAlias, string classPrefix = "hljs-")
+Task<string> HighlightAsync(string code, string languageAlias, string classPrefix = "hljs-")
 ```
+##### Description
+Highlights code of a specified language.
 ##### Parameters
 - `code`
   - Type: `string`
@@ -106,7 +108,7 @@ public virtual async Task<string> HighlightAsync(string code, string languageAli
   - Description: A HighlightJS language alias. Visit http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#language-names-and-aliases for the list of valid language aliases.
 - `classPrefix`
   - Type: `string`
-  - Description: If not null or whitespace, this string will be appended to HighlightJS classes.
+  - Description: If not null or whitespace, this string will be appended to HighlightJS classes. Defaults to `hljs-`.
 ##### Returns
 Highlighted code.
 ##### Exceptions
@@ -115,7 +117,7 @@ Highlighted code.
 - `ArgumentException`
   - Thrown if `languageAlias` is not a valid HighlightJS language alias.
 - `InvocationException`
-  - Thrown if a Node error occurs.
+  - Thrown if a NodeJS error occurs.
 ##### Example
 ```csharp
 string code = @"public string ExampleFunction(string arg)
@@ -129,8 +131,10 @@ string highlightedCode = await highlightJSService.HighlightAsync(code, "csharp")
 #### IHighlightJSService.IsValidLanguageAliasAsync
 ##### Signature
 ```csharp
-public virtual async Task<bool> IsValidLanguageAliasAsync(string languageAlias)
+ValueTask<bool> IsValidLanguageAliasAsync(string languageAlias)
 ```
+##### Description
+Determines whether a language alias is valid.
 ##### Parameters
 - `languageAlias`
   - Type: `string`
@@ -139,7 +143,7 @@ public virtual async Task<bool> IsValidLanguageAliasAsync(string languageAlias)
 `true` if `languageAlias` is a valid HighlightJS language alias. Otherwise, `false`.
 ##### Exceptions
 - `InvocationException`
-  - Thrown if a Node error occurs.
+  - Thrown if a NodeJS error occurs.
 ##### Example
 ```csharp
 bool isValid = await highlightJSService.IsValidLanguageAliasAsync("csharp");
@@ -162,8 +166,8 @@ This feature can be inaccurate, especially for short snippets.
 
 #### Continuation
 The javascript HighlightJS library has a [continuation](http://highlightjs.readthedocs.io/en/latest/api.html#highlight-name-value-ignore-illegals-continuation) feature. Essentially,
-it returns the context of every highlight call, allowing subsequent calls to continue highlighting based on the context of an earlier call:
-making multiple highlight calls with the continuation feature is equivalent to concatenating the code and making a single highlight call. For this wrapper,
+it returns the context of every highlight call, allowing subsequent calls to continue highlighting based on the context of an earlier call.
+Making multiple highlight calls with the continuation feature is equivalent to concatenating the code and making a single highlight call. For this wrapper,
 a single highlight call is far more performant since it minimizes time spent on object marshalling and inter-process communication.
 
 ## Building
@@ -173,4 +177,4 @@ This project can be built using Visual Studio 2017.
 Contributions are welcome!  
 
 ## About
-Follow [@JeremyTCD](https://twitter.com/intent/user?screen_name=JeremyTCD) for updates.
+Follow [@JeremyTCD](https://twitter.com/JeremyTCD) for updates and more.
