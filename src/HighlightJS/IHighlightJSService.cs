@@ -19,7 +19,7 @@ namespace Jering.WebUtils.SyntaxHighlighters.HighlightJS
         /// <returns>Highlighted code.</returns>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="code"/> is null.</exception>
         /// <exception cref="ArgumentException">Thrown if <paramref name="languageAlias"/> is not a valid HighlightJS language alias.</exception>
-        /// <exception cref="InvocationException">Thrown if a Node error occurs.</exception>
+        /// <exception cref="InvocationException">Thrown if a NodeJS error occurs.</exception>
         Task<string> HighlightAsync(string code,
             string languageAlias,
             string classPrefix = "hljs-");
