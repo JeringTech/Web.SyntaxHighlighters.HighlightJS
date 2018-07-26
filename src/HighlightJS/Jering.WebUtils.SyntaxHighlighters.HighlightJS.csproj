@@ -4,7 +4,7 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <PackageId>Jering.WebUtils.SyntaxHighlighters.HighlightJS</PackageId>
         <Authors>JeremyTCD</Authors>
-        <Description>Perform Syntax Highlighting in .Net Applications Using the Javascript Library, HighlightJS.</Description>
+        <Description>A C# Wrapper for the Syntax Highlighter, HighlightJS.</Description>
         <Copyright>© JeremyTCD. All rights reserved.</Copyright>
         <PackageProjectUrl>https://github.com/JeremyTCD/WebUtils.SyntaxHighlighters.HighlightJS</PackageProjectUrl>
         <PackageLicenseUrl>$(PackageProjectUrl)/blob/master/License.txt</PackageLicenseUrl>
