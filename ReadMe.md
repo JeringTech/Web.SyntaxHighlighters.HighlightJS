@@ -12,6 +12,7 @@ Perform Syntax Highlighting in .Net Applications Using the Javascript Library, [
 [Installation](#installation)  
 [Usage](#usage)  
 [Building](#building)  
+[Related Projects](#related-projects)  
 [Contributing](#contributing)  
 [About](#about)
 
@@ -181,6 +182,15 @@ a single highlight call is far more performant since it minimizes time spent on 
 
 ## Building
 This project can be built using Visual Studio 2017.
+
+## Related Projects
+#### Similar Projects
+[Jering.WebUtils.SyntaxHighlighters.Prism](https://github.com/JeremyTCD/WebUtils.SyntaxHighlighters.Prism) - 
+A C# Wrapper for the Syntax Highlighter, Prism.
+#### Projects Using this Library
+[Jering.Markdig.Extensions.FlexiBlocks](https://github.com/JeremyTCD/Markdig.Extensions.FlexiBlocks) - A Collection of Flexible Markdig Extensions.
+#### Projects this Library Uses
+[Jering.JavascriptUtils.NodeJS](https://github.com/JeremyTCD/JavascriptUtils.NodeJS) - A Tool for Invoking Javascript from C#.
 
 ## Contributing
 Contributions are welcome!  
