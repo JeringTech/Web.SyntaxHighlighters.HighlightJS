@@ -1,10 +1,19 @@
-# WebUtils.SyntaxHighlighters.HighlightJS
+# Jering.WebUtils.SyntaxHighlighters.HighlightJS
 [![Build status](https://ci.appveyor.com/api/projects/status/wawhrh1nvy5fae2s?svg=true)](https://ci.appveyor.com/project/JeremyTCD/webutils-syntaxhighlighters-highlightjs)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/Pkcs11Interop/Pkcs11Interop/blob/master/LICENSE.md)
 [![NuGet](https://img.shields.io/nuget/vpre/Jering.WebUtils.SyntaxHighlighters.HighlightJS.svg?label=nuget)](https://www.nuget.org/packages/Jering.WebUtils.SyntaxHighlighters.HighlightJS/)
 <!-- TODO tests badge, this service should work - https://github.com/monkey3310/appveyor-shields-badges/blob/master/README.md -->
 
 Perform Syntax Highlighting in .Net Applications Using the Javascript Library, [HighlightJS](http://highlightjs.readthedocs.io/en/latest/index.html). 
+
+## Table of Contents
+[Overview](#overview)  
+[Prerequisites](#prerequisites)  
+[Installation](#installation)  
+[Usage](#usage)  
+[Building](#building)  
+[Contributing](#contributing)  
+[About](#about)
 
 ## Overview
 Syntax highlighters add markup to code to facilitate styling. For example, the following code:
@@ -149,7 +158,7 @@ Determines whether a language alias is valid.
 bool isValid = await highlightJSService.IsValidLanguageAliasAsync("csharp");
 ```
 
-## API Notes
+### API Notes
 If you've used the javascript HighlightJS library before, you might have noticed that some of its features have been omitted in this
 wrapper. The following are the reasons for their omittance:
 
