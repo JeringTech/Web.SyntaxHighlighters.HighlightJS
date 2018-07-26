@@ -4,12 +4,11 @@
 [![NuGet](https://img.shields.io/nuget/vpre/Jering.WebUtils.SyntaxHighlighters.HighlightJS.svg?label=nuget)](https://www.nuget.org/packages/Jering.WebUtils.SyntaxHighlighters.HighlightJS/)
 <!-- TODO tests badge, this service should work - https://github.com/monkey3310/appveyor-shields-badges/blob/master/README.md -->
 
-Perform Syntax Highlighting in .Net Applications Using the Javascript Library, [HighlightJS](http://highlightjs.readthedocs.io/en/latest/index.html). 
-
 ## Table of Contents
 [Overview](#overview)  
 [Prerequisites](#prerequisites)  
 [Installation](#installation)  
+[Concepts](#concepts)  
 [Usage](#usage)  
 [Building](#building)  
 [Related Projects](#related-projects)  
@@ -17,6 +16,23 @@ Perform Syntax Highlighting in .Net Applications Using the Javascript Library, [
 [About](#about)
 
 ## Overview
+This library provides a way to perform syntax highlighting in .Net applications using the javascript library, [HighlightJS](http://highlightjs.readthedocs.io/en/latest/index.html). 
+
+## Prerequisites
+[Node.js](https://nodejs.org/en/) must be installed and node.exe's directory must be added to the `Path` environment variable.
+
+## Installation
+Using Package Manager:
+```
+PM> Install-Package Jering.WebUtils.SyntaxHighlighters.HighlightJS
+```
+Using .Net CLI:
+```
+> dotnet add package Jering.WebUtils.SyntaxHighlighters.HighlightJS
+```
+
+## Concepts
+### What is a Syntax Highlighter?
 Syntax highlighters add markup to code to facilitate styling. For example, the following code:
 
 ```csharp
@@ -42,20 +58,7 @@ HighlightJS is a a javascript library, which is ideal since syntax highlighting 
 - When page load time is critical.
 - When page size is critical.
 
-WebUtils.SyntaxHighlighters.HighlightJS allows syntax highlighting to be done by .Net server-side applications and tools like static site generators.
-
-## Prerequisites
-[Node.js](https://nodejs.org/en/) must be installed and node.exe's directory must be added to the `Path` environment variable.
-
-## Installation
-Using Package Manager:
-```
-PM> Install-Package Jering.WebUtils.SyntaxHighlighters.HighlightJS
-```
-Using .Net CLI:
-```
-> dotnet add package Jering.WebUtils.SyntaxHighlighters.HighlightJS
-```
+This library allows syntax highlighting to be done by .Net server-side applications and tools like static site generators.
 
 ## Usage
 ### Creating `IHighlightJSService` in ASP.NET Apps
