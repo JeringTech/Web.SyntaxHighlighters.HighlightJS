@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace Jering.WebUtils.SyntaxHighlighters.HighlightJS
 {
     /// <summary>
-    /// A service for performing syntax highlighting using HighlightJS.
+    /// An abstraction for performing syntax highlighting using HighlightJS.
     /// </summary>
     public interface IHighlightJSService
     {
