@@ -10,6 +10,7 @@
 [Installation](#installation)  
 [Concepts](#concepts)  
 [Usage](#usage)  
+[API](#api)  
 [Building](#building)  
 [Related Projects](#related-projects)  
 [Contributing](#contributing)  
@@ -19,7 +20,7 @@
 This library provides a way to perform syntax highlighting in .Net applications using the javascript library, [HighlightJS](http://highlightjs.readthedocs.io/en/latest/index.html). 
 
 ## Prerequisites
-[Node.js](https://nodejs.org/en/) must be installed and node.exe's directory must be added to the `Path` environment variable.
+[NodeJS](https://nodejs.org/en/) must be installed and node.exe's directory must be added to the `Path` environment variable.
 
 ## Installation
 Using Package Manager:
@@ -61,34 +62,20 @@ HighlightJS is a a javascript library, which is ideal since syntax highlighting 
 This library allows syntax highlighting to be done by .Net server-side applications and tools like static site generators.
 
 ## Usage
-### Creating `IHighlightJSService` in ASP.NET Apps
-ASP.NET has a built in dependency injection (DI) system. This system can handle instantiation and disposal of `IHighlightJSService` instances.
-Call `AddHighlightJS` in `Startup.ConfigureServices` to register a service for `IHighlightJSService`:
-```csharp
-public void ConfigureServices(IServiceCollection services)
-{
-    services.AddHighlightJS();
-}
-```
-You can then inject `IHighlightJSService` into controllers:
-```csharp
-public MyController(IHighlightJSService highlightJSService)
-{
-    _highlightJSService = highlightJSService;
-}
-```
-
-### Creating `IHighlightJSService` in non-ASP.NET Apps
-In non-ASP.NET projects, you'll have to create your own DI container. For example, using [Microsoft.Extensions.DependencyInjection](https://github.com/aspnet/DependencyInjection):
+### Creating IHighlightJSService
+This library uses depedency injection (DI) to facilitate extensibility and testability.
+You can use any DI framework that has adapters for [Microsoft.Extensions.DependencyInjection](https://github.com/aspnet/DependencyInjection).
+Here, we'll use the vanilla Microsoft.Extensions.DependencyInjection framework:
 ```csharp
 var services = new ServiceCollection();
 services.AddHighlightJS();
 ServiceProvider serviceProvider = services.BuildServiceProvider();
 IHighlightJSService highlightJSService = serviceProvider.GetRequiredService<IHighlightJSService>();
 ```
+
 `IHighlightJSService` is a singleton service and `IHighlightJSService`'s members are thread safe.
 Where possible, inject `IHighlightJSService` into your types or keep a reference to a shared `IHighlightJSService` instance. 
-Try to avoid creating multiple `IHighlightJSService` instances, since each instance spawns a Node.js process. 
+Try to avoid creating multiple `IHighlightJSService` instances, since each instance spawns a NodeJS process. 
 
 When you're done, you can manually dispose of an `IHighlightJSService` instance by calling
 ```csharp
@@ -98,40 +85,14 @@ or
 ```csharp
 serviceProvider.Dispose(); // Calls Dispose on objects it has instantiated that are disposable
 ```
-`Dispose` kills the spawned Node.js process.
-Note that even if `Dispose` isn't called manually, the service that manages the Node.js process, `INodeJSService` from [Jering.JavascriptUtils.NodeJS](https://github.com/JeremyTCD/JavascriptUtils.NodeJS), will kill the 
-Node.js process when the application shuts down - if the application shuts down gracefully. If the application does not shutdown gracefully, the Node.js process will kill 
+`Dispose` kills the spawned NodeJS process.
+Note that even if `Dispose` isn't called manually, the service that manages the NodeJS process, `INodeJSService` from [Jering.JavascriptUtils.NodeJS](https://github.com/JeremyTCD/JavascriptUtils.NodeJS), will kill the 
+NodeJS process when the application shuts down - if the application shuts down gracefully. If the application does not shutdown gracefully, the NodeJS process will kill 
 itself when it detects that its parent has been killed. 
 Essentially, manually disposing of `IHighlightJSService` instances is not mandatory.
 
-### API
-#### IHighlightJSService.HighlightAsync
-##### Signature
-```csharp
-Task<string> HighlightAsync(string code, string languageAlias, string classPrefix = "hljs-")
-```
-##### Description
-Highlights code of a specified language.
-##### Parameters
-- `code`
-  - Type: `string`
-  - Description: Code to highlight.
-- `languageAlias`
-  - Type: `string`
-  - Description: A HighlightJS language alias. Visit http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#language-names-and-aliases for the list of valid language aliases.
-- `classPrefix`
-  - Type: `string`
-  - Description: If not null or whitespace, this string will be appended to HighlightJS classes. Defaults to `hljs-`.
-##### Returns
-Highlighted code.
-##### Exceptions
-- `ArgumentNullException`
-  - Thrown if `code` is null.
-- `ArgumentException`
-  - Thrown if `languageAlias` is not a valid HighlightJS language alias.
-- `InvocationException`
-  - Thrown if a NodeJS error occurs.
-##### Example
+### Using IHighlightJSService
+Code can be highlighted using [`IHighlightJSService.HighlightAsync`](#ihighlightjsservice.highlightasync):
 ```csharp
 string code = @"public string ExampleFunction(string arg)
 {
@@ -141,23 +102,63 @@ string code = @"public string ExampleFunction(string arg)
 
 string highlightedCode = await highlightJSService.HighlightAsync(code, "csharp");
 ```
-#### IHighlightJSService.IsValidLanguageAliasAsync
-##### Signature
+Note the second parameter of `IHighlightJSService.HighlightAsync`. It must be a valid [HighlightJS language alias](http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#language-names-and-aliases) representing the 
+code's language.
+
+## API
+### IHighlightJSService.HighlightAsync
+#### Signature
+```csharp
+Task<string> HighlightAsync(string code, string languageAlias, string classPrefix = "hljs-")
+```
+#### Description
+Highlights code of a specified language.
+#### Parameters
+- `code`
+  - Type: `string`
+  - Description: Code to highlight.
+- `languageAlias`
+  - Type: `string`
+  - Description: A HighlightJS language alias. Visit http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#language-names-and-aliases for the list of valid language aliases.
+- `classPrefix`
+  - Type: `string`
+  - Description: If not null or whitespace, this string will be appended to HighlightJS classes. Defaults to `hljs-`.
+#### Returns
+Highlighted code.
+#### Exceptions
+- `ArgumentNullException`
+  - Thrown if `code` is null.
+- `ArgumentException`
+  - Thrown if `languageAlias` is not a valid HighlightJS language alias.
+- `InvocationException`
+  - Thrown if a NodeJS error occurs.
+#### Example
+```csharp
+string code = @"public string ExampleFunction(string arg)
+{
+    // Example comment
+    return arg + ""dummyString"";
+}";
+
+string highlightedCode = await highlightJSService.HighlightAsync(code, "csharp");
+```
+### IHighlightJSService.IsValidLanguageAliasAsync
+#### Signature
 ```csharp
 ValueTask<bool> IsValidLanguageAliasAsync(string languageAlias)
 ```
-##### Description
+#### Description
 Determines whether a language alias is valid.
-##### Parameters
+#### Parameters
 - `languageAlias`
   - Type: `string`
   - Description: Language alias to validate. Visit http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#language-names-and-aliases for the list of valid language aliases.
-##### Returns
+#### Returns
 `true` if `languageAlias` is a valid HighlightJS language alias. Otherwise, `false`.
-##### Exceptions
+#### Exceptions
 - `InvocationException`
   - Thrown if a NodeJS error occurs.
-##### Example
+#### Example
 ```csharp
 bool isValid = await highlightJSService.IsValidLanguageAliasAsync("csharp");
 ```
