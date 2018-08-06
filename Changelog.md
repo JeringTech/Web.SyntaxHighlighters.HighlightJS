@@ -5,6 +5,12 @@ for an overview of semantic versioning.
 
 ## [Unreleased](https://github.com/JeremyTCD/Web.SyntaxHighlighters.HighlightJS/compare/1.1.0...HEAD)
 
+## 2.0.0 - Aug 6, 2018
+### Changes
+- Renamed project to `Jering.Web.SyntaxHighlighters.HighlightJS` for consistency with other `Jering` packages. Using statements must be updated to reference types from the
+namespace `Jering.Web.SyntaxHighlighters.HighlightJS` instead of `Jering.WebUtils.SyntaxHighlighters.HighlightJS`.
+- Added .NET Standard 1.3 as a target framework.
+
 ## 1.1.0 - Jul 25, 2018
 ### Changes
 - Replaced [Microsoft.AspNetCore.NodeServices](https://github.com/aspnet/JavaScriptServices/tree/master/src/Microsoft.AspNetCore.NodeServices) with 
