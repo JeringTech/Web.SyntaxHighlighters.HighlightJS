@@ -1,6 +1,6 @@
 ﻿using BenchmarkDotNet.Running;
 
-namespace Jering.WebUtils.SyntaxHighlighters.HighlightJS.Performance
+namespace Jering.Web.SyntaxHighlighters.HighlightJS.Performance
 {
     public class Program
     {

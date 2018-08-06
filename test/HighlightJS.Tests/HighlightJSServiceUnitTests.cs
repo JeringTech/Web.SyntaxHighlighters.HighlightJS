@@ -1,13 +1,14 @@
-﻿using Jering.JavascriptUtils.NodeJS;
+﻿using Jering.Javascript.NodeJS;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Jering.WebUtils.SyntaxHighlighters.HighlightJS.Tests
+namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
 {
     public class HighlightJSServiceUnitTests
     {
@@ -111,7 +112,7 @@ namespace Jering.WebUtils.SyntaxHighlighters.HighlightJS.Tests
             var dummyStream = new MemoryStream();
             Mock<IEmbeddedResourcesService> mockEmbeddedResourcesService = _mockRepository.Create<IEmbeddedResourcesService>();
             mockEmbeddedResourcesService.
-                Setup(e => e.ReadAsStream(typeof(HighlightJSService).Assembly, HighlightJSService.BUNDLE_NAME)).
+                Setup(e => e.ReadAsStream(typeof(HighlightJSService).GetTypeInfo().Assembly, HighlightJSService.BUNDLE_NAME)).
                 Returns(dummyStream);
             Mock<INodeJSService> mockNodeJSService = _mockRepository.Create<INodeJSService>();
             mockNodeJSService.
@@ -183,7 +184,7 @@ namespace Jering.WebUtils.SyntaxHighlighters.HighlightJS.Tests
             var dummyStream = new MemoryStream();
             Mock<IEmbeddedResourcesService> mockEmbeddedResourcesService = _mockRepository.Create<IEmbeddedResourcesService>();
             mockEmbeddedResourcesService.
-                Setup(e => e.ReadAsStream(typeof(HighlightJSService).Assembly, HighlightJSService.BUNDLE_NAME)).
+                Setup(e => e.ReadAsStream(typeof(HighlightJSService).GetTypeInfo().Assembly, HighlightJSService.BUNDLE_NAME)).
                 Returns(dummyStream);
             Mock<INodeJSService> mockNodeJSService = _mockRepository.Create<INodeJSService>();
             mockNodeJSService.

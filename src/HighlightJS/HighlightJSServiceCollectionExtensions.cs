@@ -1,8 +1,8 @@
-﻿using Jering.JavascriptUtils.NodeJS;
+﻿using Jering.Javascript.NodeJS;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Jering.WebUtils.SyntaxHighlighters.HighlightJS
+namespace Jering.Web.SyntaxHighlighters.HighlightJS
 {
     /// <summary>
     /// Extension methods for setting up HighlightJS in an <see cref="IServiceCollection" />.

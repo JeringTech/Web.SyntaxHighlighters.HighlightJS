@@ -1,11 +1,12 @@
-# Jering.WebUtils.SyntaxHighlighters.HighlightJS
-[![Build status](https://ci.appveyor.com/api/projects/status/wawhrh1nvy5fae2s?svg=true)](https://ci.appveyor.com/project/JeremyTCD/webutils-syntaxhighlighters-highlightjs)
+# Jering.Web.SyntaxHighlighters.HighlightJS
+[![Build status](https://ci.appveyor.com/api/projects/status/wawhrh1nvy5fae2s?svg=true)](https://ci.appveyor.com/project/JeremyTCD/web-syntaxhighlighters-highlightjs)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/Pkcs11Interop/Pkcs11Interop/blob/master/LICENSE.md)
-[![NuGet](https://img.shields.io/nuget/vpre/Jering.WebUtils.SyntaxHighlighters.HighlightJS.svg?label=nuget)](https://www.nuget.org/packages/Jering.WebUtils.SyntaxHighlighters.HighlightJS/)
+[![NuGet](https://img.shields.io/nuget/vpre/Jering.Web.SyntaxHighlighters.HighlightJS.svg?label=nuget)](https://www.nuget.org/packages/Jering.Web.SyntaxHighlighters.HighlightJS/)
 <!-- TODO tests badge, this service should work - https://github.com/monkey3310/appveyor-shields-badges/blob/master/README.md -->
 
 ## Table of Contents
 [Overview](#overview)  
+[Target Frameworks](#target-frameworks)  
 [Prerequisites](#prerequisites)  
 [Installation](#installation)  
 [Concepts](#concepts)  
@@ -19,17 +20,21 @@
 ## Overview
 This library provides a way to perform syntax highlighting in .Net applications using the javascript library, [HighlightJS](http://highlightjs.readthedocs.io/en/latest/index.html). 
 
+## Target Frameworks
+- .NET Standard 1.3
+- .NET Standard 2.0
+ 
 ## Prerequisites
 [NodeJS](https://nodejs.org/en/) must be installed and node.exe's directory must be added to the `Path` environment variable.
 
 ## Installation
 Using Package Manager:
 ```
-PM> Install-Package Jering.WebUtils.SyntaxHighlighters.HighlightJS
+PM> Install-Package Jering.Web.SyntaxHighlighters.HighlightJS
 ```
 Using .Net CLI:
 ```
-> dotnet add package Jering.WebUtils.SyntaxHighlighters.HighlightJS
+> dotnet add package Jering.Web.SyntaxHighlighters.HighlightJS
 ```
 
 ## Concepts
@@ -86,7 +91,7 @@ or
 serviceProvider.Dispose(); // Calls Dispose on objects it has instantiated that are disposable
 ```
 `Dispose` kills the spawned NodeJS process.
-Note that even if `Dispose` isn't called manually, the service that manages the NodeJS process, `INodeJSService` from [Jering.JavascriptUtils.NodeJS](https://github.com/JeremyTCD/JavascriptUtils.NodeJS), will kill the 
+Note that even if `Dispose` isn't called manually, the service that manages the NodeJS process, `INodeJSService` from [Jering.Javascript.NodeJS](https://github.com/JeremyTCD/Javascript.NodeJS), will kill the 
 NodeJS process when the application shuts down - if the application shuts down gracefully. If the application does not shutdown gracefully, the NodeJS process will kill 
 itself when it detects that its parent has been killed. 
 Essentially, manually disposing of `IHighlightJSService` instances is not mandatory.
@@ -189,12 +194,12 @@ This project can be built using Visual Studio 2017.
 
 ## Related Projects
 #### Similar Projects
-[Jering.WebUtils.SyntaxHighlighters.Prism](https://github.com/JeremyTCD/WebUtils.SyntaxHighlighters.Prism) - 
+[Jering.Web.SyntaxHighlighters.Prism](https://github.com/JeremyTCD/Web.SyntaxHighlighters.Prism) - 
 A C# Wrapper for the Syntax Highlighter, Prism.
 #### Projects Using this Library
 [Jering.Markdig.Extensions.FlexiBlocks](https://github.com/JeremyTCD/Markdig.Extensions.FlexiBlocks) - A Collection of Flexible Markdig Extensions.
 #### Projects this Library Uses
-[Jering.JavascriptUtils.NodeJS](https://github.com/JeremyTCD/JavascriptUtils.NodeJS) - A Tool for Invoking Javascript from C#.
+[Jering.Javascript.NodeJS](https://github.com/JeremyTCD/Javascript.NodeJS) - Invoke Javascript in NodeJS from C#.
 
 ## Contributing
 Contributions are welcome!  

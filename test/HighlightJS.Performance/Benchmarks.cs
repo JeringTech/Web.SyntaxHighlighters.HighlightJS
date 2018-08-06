@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 
-namespace Jering.WebUtils.SyntaxHighlighters.HighlightJS.Performance
+namespace Jering.Web.SyntaxHighlighters.HighlightJS.Performance
 {
     [MemoryDiagnoser]
     public class Benchmarks

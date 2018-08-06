@@ -1,8 +1,8 @@
-﻿using Jering.JavascriptUtils.NodeJS;
+﻿using Jering.Javascript.NodeJS;
 using System;
 using System.Threading.Tasks;
 
-namespace Jering.WebUtils.SyntaxHighlighters.HighlightJS
+namespace Jering.Web.SyntaxHighlighters.HighlightJS
 {
     /// <summary>
     /// An abstraction for performing syntax highlighting using HighlightJS.

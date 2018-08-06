@@ -1,4 +1,4 @@
-﻿using Jering.JavascriptUtils.NodeJS;
+﻿using Jering.Javascript.NodeJS;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -6,11 +6,11 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Jering.WebUtils.SyntaxHighlighters.HighlightJS.Tests
+namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
 {
     public class HighlightJSServiceIntegrationTests : IDisposable
     {
-        private ServiceProvider _serviceProvider;
+        private IServiceProvider _serviceProvider;
 
         [Theory]
         [MemberData(nameof(HighlightAsync_HighlightsCode_Data))]
@@ -159,7 +159,7 @@ namespace Jering.WebUtils.SyntaxHighlighters.HighlightJS.Tests
         public void Dispose()
         {
             // Ensure that NodeJSService gets disposed
-            _serviceProvider?.Dispose();
+            ((IDisposable)_serviceProvider).Dispose();
         }
     }
 }

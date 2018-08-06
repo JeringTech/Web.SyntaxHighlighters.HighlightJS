@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <CodeAnalysisRuleSet>../../Jering.WebUtils.SyntaxHighlighters.HighlightJS.ruleset</CodeAnalysisRuleSet>
+        <CodeAnalysisRuleSet>../../Jering.Web.SyntaxHighlighters.HighlightJS.ruleset</CodeAnalysisRuleSet>
     </PropertyGroup>
 
     <ItemGroup>
@@ -15,7 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\HighlightJS\Jering.WebUtils.SyntaxHighlighters.HighlightJS.csproj" />
+      <ProjectReference Include="..\..\src\HighlightJS\Jering.Web.SyntaxHighlighters.HighlightJS.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,23 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
-        <PackageId>Jering.WebUtils.SyntaxHighlighters.HighlightJS</PackageId>
+        <TargetFrameworks>netstandard1.3;netstandard2.0</TargetFrameworks>
+        <PackageId>Jering.Web.SyntaxHighlighters.HighlightJS</PackageId>
         <Authors>JeremyTCD</Authors>
         <Description>A C# Wrapper for the Syntax Highlighter, HighlightJS.</Description>
         <Copyright>© JeremyTCD. All rights reserved.</Copyright>
-        <PackageProjectUrl>https://github.com/JeremyTCD/WebUtils.SyntaxHighlighters.HighlightJS</PackageProjectUrl>
+        <PackageProjectUrl>https://github.com/JeremyTCD/Web.SyntaxHighlighters.HighlightJS</PackageProjectUrl>
         <PackageLicenseUrl>$(PackageProjectUrl)/blob/master/License.txt</PackageLicenseUrl>
         <PackageReleaseNotes>$(PackageProjectUrl)/blob/master/Changelog.md</PackageReleaseNotes>
         <RepositoryUrl>$(PackageProjectUrl)</RepositoryUrl>
-        <PackageTags>highlightjs syntax highlighter</PackageTags>
+        <PackageTags>syntax highlighter</PackageTags>
         <RepositoryType>git</RepositoryType>
         <IncludeSymbols>true</IncludeSymbols>
     </PropertyGroup>
 
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <CodeAnalysisRuleSet>../../Jering.WebUtils.SyntaxHighlighters.HighlightJS.ruleset</CodeAnalysisRuleSet>
+        <CodeAnalysisRuleSet>../../Jering.Web.SyntaxHighlighters.HighlightJS.ruleset</CodeAnalysisRuleSet>
         <BundleName>bundle.js</BundleName>
         <!-- Exclude Javascript\bin and Javascript\node_modules from project - https://github.com/dotnet/cli/issues/7525 -->
         <DefaultItemExcludes>Javascript\bin\**;Javascript\node_modules\**;$(DefaultItemExcludes)</DefaultItemExcludes>
@@ -32,12 +32,19 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Jering.JavascriptUtils.NodeJS" Version="0.1.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.0" />
+        <PackageReference Include="Jering.Javascript.NodeJS" Version="3.0.0" />
         <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.1" />
         <PackageReference Include="Roslynator.Analyzers" Version="1.8.0" PrivateAssets="All" ExcludeAssets="Runtime" />
         <PackageReference Include="Roslynator.CodeFixes" Version="1.8.0" PrivateAssets="All" ExcludeAssets="Runtime" />
-        <PackageReference Include="Yarn.MSBuild" Version="1.5.2" PrivateAssets="All" ExcludeAssets="Runtime" />
+        <PackageReference Include="Yarn.MSBuild" Version="1.7.0" PrivateAssets="All" ExcludeAssets="Runtime" />
+    </ItemGroup>
+
+    <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.0" />
+    </ItemGroup>
+
+    <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.1" />
     </ItemGroup>
 
     <ItemGroup>
@@ -56,7 +63,7 @@
     </ItemGroup>
 
     <!-- inputs and outputs https://docs.microsoft.com/en-sg/visualstudio/msbuild/how-to-build-incrementally -->
-    <Target Name="JavascriptBuild" BeforeTargets="BeforeBuild" Inputs="@(JavascriptInputs)" Outputs="@(JavascriptOutputs)">
+    <Target Name="JavascriptBuild" BeforeTargets="DispatchToInnerBuilds" Inputs="@(JavascriptInputs)" Outputs="@(JavascriptOutputs)">
         <Yarn WorkingDirectory=".\Javascript" Command="run build --env.mode=$(Configuration) --env.bundleName=$(BundleName)" />
     </Target>
 

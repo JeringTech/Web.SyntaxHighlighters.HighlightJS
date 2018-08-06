@@ -7,17 +7,17 @@ install:
 build_script:
 - ps: |
     dotnet build -c Release
-    & $env:USERPROFILE\.nuget\packages\inheritdoc\1.2.0.1\tools\InheritDoc.exe -o -b .\src\HighlightJS\bin\Release\netstandard2.0
+    & $env:USERPROFILE\.nuget\packages\inheritdoc\1.2.0.1\tools\InheritDoc.exe -o -b .\src\HighlightJS\bin\Release
     dotnet pack --no-build -c Release /p:version=$env:APPVEYOR_REPO_TAG_NAME
 test_script:
 - ps: |
     cd .\test\HighlightJS.Tests
-    dotnet test -c Release -l trx -r ./ --no-build .\Jering.WebUtils.SyntaxHighlighters.HighlightJS.Tests.csproj
+    dotnet test -c Release -l trx -r ./ --no-build .\Jering.Web.SyntaxHighlighters.HighlightJS.Tests.csproj
     if($LastExitCode -ne 0){
         throw "Tests failed."
     }
-    $wc = New-Object 'System.Net.WebClient'
-    $wc.UploadFile("https://ci.appveyor.com/api/testresults/mstest/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\*.trx))
+    # $wc = New-Object 'System.Net.WebClient'
+    # $wc.UploadFile("https://ci.appveyor.com/api/testresults/mstest/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\*.trx))
 artifacts:
   - path: '.\src\HighlightJS\bin\Release\*.nupkg'
 deploy:
