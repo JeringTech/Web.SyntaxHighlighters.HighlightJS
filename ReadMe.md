@@ -107,8 +107,7 @@ string code = @"public string ExampleFunction(string arg)
 
 string highlightedCode = await highlightJSService.HighlightAsync(code, "csharp");
 ```
-Note the second parameter of `IHighlightJSService.HighlightAsync`. It must be a valid [HighlightJS language alias](http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#language-names-and-aliases) representing the 
-code's language.
+The second parameter of `IHighlightJSService.HighlightAsync` must be a valid [HighlightJS language alias](http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#language-names-and-aliases).
 
 ## API
 ### IHighlightJSService.HighlightAsync
