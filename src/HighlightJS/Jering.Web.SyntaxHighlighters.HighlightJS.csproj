@@ -4,7 +4,8 @@
         <TargetFrameworks>netstandard1.3;netstandard2.0</TargetFrameworks>
         <PackageId>Jering.Web.SyntaxHighlighters.HighlightJS</PackageId>
         <Authors>JeremyTCD</Authors>
-        <Description>A C# Wrapper for the Syntax Highlighter, HighlightJS.</Description>
+        <Title>Use the Syntax Highlighter, HighlightJS, from C#.</Title>
+        <Description>This library provides ways to perform syntax highlighting in .Net applications using the javascript library, HighlightJS.</Description>
         <Copyright>© JeremyTCD. All rights reserved.</Copyright>
         <PackageProjectUrl>https://github.com/JeremyTCD/Web.SyntaxHighlighters.HighlightJS</PackageProjectUrl>
         <PackageLicenseUrl>$(PackageProjectUrl)/blob/master/License.txt</PackageLicenseUrl>
@@ -32,7 +33,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Jering.Javascript.NodeJS" Version="3.0.0" />
+        <PackageReference Include="Jering.Javascript.NodeJS" Version="3.1.0" />
         <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.1" />
         <PackageReference Include="Roslynator.Analyzers" Version="1.8.0" PrivateAssets="All" ExcludeAssets="Runtime" />
         <PackageReference Include="Roslynator.CodeFixes" Version="1.8.0" PrivateAssets="All" ExcludeAssets="Runtime" />
