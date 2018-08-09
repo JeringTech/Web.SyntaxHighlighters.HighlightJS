@@ -18,7 +18,7 @@
 [About](#about)
 
 ## Overview
-This library provides a way to perform syntax highlighting in .Net applications using the javascript library, [HighlightJS](http://highlightjs.readthedocs.io/en/latest/index.html). 
+This library provides ways to perform syntax highlighting in .Net applications using the javascript library, [HighlightJS](http://highlightjs.readthedocs.io/en/latest/index.html). 
 
 ## Target Frameworks
 - .NET Standard 1.3
@@ -193,12 +193,11 @@ This project can be built using Visual Studio 2017.
 
 ## Related Projects
 #### Similar Projects
-[Jering.Web.SyntaxHighlighters.Prism](https://github.com/JeremyTCD/Web.SyntaxHighlighters.Prism) - 
-A C# Wrapper for the Syntax Highlighter, Prism.
+[Jering.Web.SyntaxHighlighters.Prism](https://github.com/JeremyTCD/Web.SyntaxHighlighters.Prism) - Use the Syntax Highlighter, Prism, from C#.
 #### Projects Using this Library
 [Jering.Markdig.Extensions.FlexiBlocks](https://github.com/JeremyTCD/Markdig.Extensions.FlexiBlocks) - A Collection of Flexible Markdig Extensions.
 #### Projects this Library Uses
-[Jering.Javascript.NodeJS](https://github.com/JeremyTCD/Javascript.NodeJS) - Invoke Javascript in NodeJS from C#.
+[Jering.Javascript.NodeJS](https://github.com/JeremyTCD/Javascript.NodeJS) - Invoke Javascript in NodeJS, from C#.
 
 ## Contributing
 Contributions are welcome!  
