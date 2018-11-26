@@ -53,8 +53,8 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
     return arg + ""dummyString"";
 }",
                     "csharp",
-                    @"<span class=""hljs-function""><span class=""hljs-keyword"">public</span> <span class=""hljs-keyword"">string</span> <span class=""hljs-title"">ExampleFunction</span>(<span class=""hljs-params""><span class=""hljs-keyword"">string</span> arg</span>)
-</span>{
+                    @"<span class=""hljs-function""><span class=""hljs-keyword"">public</span> <span class=""hljs-keyword"">string</span> <span class=""hljs-title"">ExampleFunction</span>(<span class=""hljs-params""><span class=""hljs-keyword"">string</span> arg</span>)</span>
+{
     <span class=""hljs-comment"">// Example comment</span>
     <span class=""hljs-keyword"">return</span> arg + <span class=""hljs-string"">""dummyString""</span>;
 }"
@@ -88,16 +88,16 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
             {
                 new object[]{
                     null,
-                    @"<span class=""function""><span class=""keyword"">public</span> <span class=""keyword"">string</span> <span class=""title"">ExampleFunction</span>(<span class=""params""><span class=""keyword"">string</span> arg</span>)
-</span>{
+                    @"<span class=""function""><span class=""keyword"">public</span> <span class=""keyword"">string</span> <span class=""title"">ExampleFunction</span>(<span class=""params""><span class=""keyword"">string</span> arg</span>)</span>
+{
     <span class=""comment"">// Example comment</span>
     <span class=""keyword"">return</span> arg + <span class=""string"">""dummyString""</span>;
 }"
                 },
                 new object[]{
                     "test-",
-                    @"<span class=""test-function""><span class=""test-keyword"">public</span> <span class=""test-keyword"">string</span> <span class=""test-title"">ExampleFunction</span>(<span class=""test-params""><span class=""test-keyword"">string</span> arg</span>)
-</span>{
+                    @"<span class=""test-function""><span class=""test-keyword"">public</span> <span class=""test-keyword"">string</span> <span class=""test-title"">ExampleFunction</span>(<span class=""test-params""><span class=""test-keyword"">string</span> arg</span>)</span>
+{
     <span class=""test-comment"">// Example comment</span>
     <span class=""test-keyword"">return</span> arg + <span class=""test-string"">""dummyString""</span>;
 }"
