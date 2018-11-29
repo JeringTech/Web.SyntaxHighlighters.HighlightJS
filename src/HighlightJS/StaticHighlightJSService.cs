@@ -1,4 +1,5 @@
 ﻿using Jering.Javascript.NodeJS;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,10 +7,43 @@ using System.Threading.Tasks;
 namespace Jering.Web.SyntaxHighlighters.HighlightJS
 {
     /// <summary>
-    /// An abstraction for performing syntax highlighting using HighlightJS.
+    /// A class that provides static access to an instance of the default <see cref="IHighlightJSService"/> implementation's public methods.
     /// </summary>
-    public interface IHighlightJSService
+    public static class StaticHighlightJSService
     {
+        private static IServiceCollection _services;
+        private static ServiceProvider _serviceProvider;
+        private static IHighlightJSService _HighlightJSService;
+
+        private static IHighlightJSService GetOrCreateHighlightJSService()
+        {
+            if (_HighlightJSService != null && _services == null)
+            {
+                // HighlightJSService already exists and no configuration pending
+                return _HighlightJSService;
+            }
+
+            // Dispose of service provider
+            _serviceProvider?.Dispose();
+
+            // Create new service provider
+            (_services ?? (_services = new ServiceCollection())).AddHighlightJS();
+            _serviceProvider = _services.BuildServiceProvider();
+            _services = null;
+
+            return _HighlightJSService = _serviceProvider.GetRequiredService<IHighlightJSService>();
+        }
+
+        /// <summary>
+        /// Configures options.
+        /// </summary>
+        /// <typeparam name="T">The type of options to configure.</typeparam>
+        /// <param name="configureOptions">The action that configures the options.</param>
+        public static void Configure<T>(Action<T> configureOptions) where T : class
+        {
+            (_services ?? (_services = new ServiceCollection())).Configure(configureOptions);
+        }
+
         /// <summary>
         /// Highlights code of a specified language.
         /// </summary>
@@ -24,7 +58,10 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS
         /// <exception cref="InvocationException">Thrown if a NodeJS error occurs.</exception>
         /// <exception cref="ObjectDisposedException">Thrown if this instance has been disposed or if an attempt is made to use one of its dependencies that has been disposed.</exception>
         /// <exception cref="OperationCanceledException">Thrown if <paramref name="cancellationToken"/> is cancelled.</exception>
-        Task<string> HighlightAsync(string code, string languageAlias, string classPrefix = "hljs-", CancellationToken cancellationToken = default);
+        public static Task<string> HighlightAsync(string code, string languageAlias, string classPrefix = "hljs-", CancellationToken cancellationToken = default)
+        {
+            return GetOrCreateHighlightJSService().HighlightAsync(code, languageAlias, classPrefix, cancellationToken);
+        }
 
         /// <summary>
         /// Determines whether a language alias is valid.
@@ -36,6 +73,9 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS
         /// <exception cref="InvocationException">Thrown if a NodeJS error occurs.</exception>
         /// <exception cref="ObjectDisposedException">Thrown if this instance has been disposed or if an attempt is made to use one of its dependencies that has been disposed.</exception>
         /// <exception cref="OperationCanceledException">Thrown if <paramref name="cancellationToken"/> is cancelled.</exception>
-        Task<bool> IsValidLanguageAliasAsync(string languageAlias, CancellationToken cancellationToken = default);
+        public static Task<bool> IsValidLanguageAliasAsync(string languageAlias, CancellationToken cancellationToken = default)
+        {
+            return GetOrCreateHighlightJSService().IsValidLanguageAliasAsync(languageAlias, cancellationToken);
+        }
     }
 }

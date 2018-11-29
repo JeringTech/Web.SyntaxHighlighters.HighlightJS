@@ -1,8 +1,8 @@
 # Jering.Web.SyntaxHighlighters.HighlightJS
-[![Build status](https://ci.appveyor.com/api/projects/status/wawhrh1nvy5fae2s?svg=true)](https://ci.appveyor.com/project/JeremyTCD/web-syntaxhighlighters-highlightjs)
+[![Build Status](https://dev.azure.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/_apis/build/status/Jering.Web.SyntaxHighlighters.HighlightJS-CI)](https://dev.azure.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/_build/latest?definitionId=4)
+[![codecov](https://codecov.io/gh/JeringTech/Web.SyntaxHighlighters.HighlightJS/branch/master/graph/badge.svg)](https://codecov.io/gh/JeringTech/Web.SyntaxHighlighters.HighlightJS)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/Pkcs11Interop/Pkcs11Interop/blob/master/LICENSE.md)
 [![NuGet](https://img.shields.io/nuget/vpre/Jering.Web.SyntaxHighlighters.HighlightJS.svg?label=nuget)](https://www.nuget.org/packages/Jering.Web.SyntaxHighlighters.HighlightJS/)
-<!-- TODO tests badge, this service should work - https://github.com/monkey3310/appveyor-shields-badges/blob/master/README.md -->
 
 ## Table of Contents
 [Overview](#overview)  
@@ -18,11 +18,32 @@
 [About](#about)
 
 ## Overview
-This library provides ways to perform syntax highlighting in .Net applications using the javascript library, [HighlightJS](http://highlightjs.readthedocs.io/en/latest/index.html). 
+Jering.Web.SyntaxHighlighters.HighlightJS enables you to perform syntax highlighting from C# projects using [HighlightJS](http://highlightjs.readthedocs.io/en/latest/index.html).
+Here is an example usage of this library:
+
+```csharp
+string code = @"public string ExampleFunction(string arg)
+{
+    // Example comment
+    return arg + ""dummyString"";
+}";
+
+// Highlight code
+string result = await StaticHighlightJSService.HighlightAsync(code, "csharp");
+
+string syntaxHighlightedCode = @"<span class=""hljs-function""><span class=""hljs-keyword"">public</span> <span class=""hljs-keyword"">string</span> <span class=""hljs-title"">ExampleFunction</span>(<span class=""hljs-params""><span class=""hljs-keyword"">string</span> arg</span>)</span>
+{
+    <span class=""hljs-comment"">// Example comment</span>
+    <span class=""hljs-keyword"">return</span> arg + <span class=""hljs-string"">""dummyString""</span>;
+}";
+
+// result == syntax highlighted code
+Assert.Equal(syntaxHighlightedCode, result);
+```
 
 ## Target Frameworks
-- .NET Standard 1.3
 - .NET Standard 2.0
+- .NET Framework 4.6.1
  
 ## Prerequisites
 [NodeJS](https://nodejs.org/en/) must be installed and node.exe's directory must be added to the `Path` environment variable.
@@ -91,10 +112,22 @@ or
 serviceProvider.Dispose(); // Calls Dispose on objects it has instantiated that are disposable
 ```
 `Dispose` kills the spawned NodeJS process.
-Note that even if `Dispose` isn't called manually, the service that manages the NodeJS process, `INodeJSService` from [Jering.Javascript.NodeJS](https://github.com/JeremyTCD/Javascript.NodeJS), will kill the 
+Note that even if `Dispose` isn't called manually, the service that manages the NodeJS process, `INodeJSService` from [Jering.Javascript.NodeJS](https://github.com/JeringTech/Javascript.NodeJS), will kill the 
 NodeJS process when the application shuts down - if the application shuts down gracefully. If the application does not shutdown gracefully, the NodeJS process will kill 
 itself when it detects that its parent has been killed. 
 Essentially, manually disposing of `IHighlightJSService` instances is not mandatory.
+
+#### Static API
+This library also provides a static API as an alternative. The `StaticHighlightJSService` type wraps an `IHighlightJSService` instance, exposing most of its [public members](#api) statically.
+Whether you use the static API or the DI based API depends on your development needs. If you are already using DI, if you want to mock 
+out syntax highlighting in your tests or if you want to overwrite services, use the DI based API. Otherwise,
+use the static API. An example usage:
+
+```csharp
+string result = await StaticHighlightJSService.HighlightAsync(code, "csharp");
+```
+
+The following section on using `IHighlightJSService` applies to usage of `StaticHighlightJSService`.
 
 ### Using IHighlightJSService
 Code can be highlighted using [`IHighlightJSService.HighlightAsync`](#ihighlightjsservice.highlightasync):
@@ -113,7 +146,7 @@ The second parameter of `IHighlightJSService.HighlightAsync` must be a valid [Hi
 ### IHighlightJSService.HighlightAsync
 #### Signature
 ```csharp
-Task<string> HighlightAsync(string code, string languageAlias, string classPrefix = "hljs-")
+Task<string> HighlightAsync(string code, string languageAlias, string classPrefix = "hljs-", CancellationToken cancellationToken = default)
 ```
 #### Description
 Highlights code of a specified language.
@@ -127,6 +160,9 @@ Highlights code of a specified language.
 - `classPrefix`
   - Type: `string`
   - Description: If not null or whitespace, this string will be appended to HighlightJS classes. Defaults to `hljs-`.
+- `cancellationToken`
+  - Type: `CancellationToken`
+  - Description: The cancellation token for the asynchronous operation.
 #### Returns
 Highlighted code.
 #### Exceptions
@@ -136,6 +172,10 @@ Highlighted code.
   - Thrown if `languageAlias` is not a valid HighlightJS language alias.
 - `InvocationException`
   - Thrown if a NodeJS error occurs.
+- `ObjectDisposedException`
+  - Thrown if this instance has been disposed or if an attempt is made to use one of its dependencies that has been disposed.
+- `OperationCanceledException`
+  - Thrown if `cancellationToken` is cancelled.
 #### Example
 ```csharp
 string code = @"public string ExampleFunction(string arg)
@@ -149,7 +189,7 @@ string highlightedCode = await highlightJSService.HighlightAsync(code, "csharp")
 ### IHighlightJSService.IsValidLanguageAliasAsync
 #### Signature
 ```csharp
-ValueTask<bool> IsValidLanguageAliasAsync(string languageAlias)
+Task<bool> IsValidLanguageAliasAsync(string languageAlias, CancellationToken cancellationToken = default)
 ```
 #### Description
 Determines whether a language alias is valid.
@@ -162,6 +202,10 @@ Determines whether a language alias is valid.
 #### Exceptions
 - `InvocationException`
   - Thrown if a NodeJS error occurs.
+- `ObjectDisposedException`
+  - Thrown if this instance has been disposed or if an attempt is made to use one of its dependencies that has been disposed.
+- `OperationCanceledException`
+  - Thrown if `cancellationToken` is cancelled.
 #### Example
 ```csharp
 bool isValid = await highlightJSService.IsValidLanguageAliasAsync("csharp");
@@ -191,16 +235,16 @@ a single highlight call is far more performant since it minimizes time spent on 
 ## Building
 This project can be built using Visual Studio 2017.
 
-## Related Projects
+## Related Jering Projects
 #### Similar Projects
-[Jering.Web.SyntaxHighlighters.Prism](https://github.com/JeremyTCD/Web.SyntaxHighlighters.Prism) - Use the Syntax Highlighter, Prism, from C#.
+[Jering.Web.SyntaxHighlighters.Prism](https://github.com/JeringTech/Web.SyntaxHighlighters.Prism) - Use the Syntax Highlighter, Prism, from C#.
 #### Projects Using this Library
-[Jering.Markdig.Extensions.FlexiBlocks](https://github.com/JeremyTCD/Markdig.Extensions.FlexiBlocks) - A Collection of Flexible Markdig Extensions.
+[Jering.Markdig.Extensions.FlexiBlocks](https://github.com/JeringTech/Markdig.Extensions.FlexiBlocks) - A Collection of Flexible Markdig Extensions.
 #### Projects this Library Uses
-[Jering.Javascript.NodeJS](https://github.com/JeremyTCD/Javascript.NodeJS) - Invoke Javascript in NodeJS, from C#.
+[Jering.Javascript.NodeJS](https://github.com/JeringTech/Javascript.NodeJS) - Invoke Javascript in NodeJS, from C#.
 
 ## Contributing
 Contributions are welcome!  
 
 ## About
-Follow [@JeremyTCD](https://twitter.com/JeremyTCD) for updates and more.
+Follow [@JeringTech](https://twitter.com/JeringTech) for updates and more.
