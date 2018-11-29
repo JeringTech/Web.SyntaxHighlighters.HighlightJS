@@ -5,9 +5,9 @@
         <PackageId>Jering.Web.SyntaxHighlighters.HighlightJS</PackageId>
         <Authors>JeremyTCD</Authors>
         <Title>Use the Syntax Highlighter, HighlightJS, from C#</Title>
-        <Description>Jering.Web.SyntaxHighlighters.HighlightJS enables you to perform syntax highlighting from C# projects using the HighlightJS library.</Description>
-        <Copyright>© Jering. All rights reserved.</Copyright>
-        <PackageProjectUrl>https://www.jering.tech/utilities/web.syntaxhighlighters.highlightjs</PackageProjectUrl>
+        <Description>Jering.Web.SyntaxHighlighters.HighlightJS enables you to perform syntax highlighting from C# projects using Highlight.js.</Description>
+        <Copyright>© 2018 Jering. All rights reserved.</Copyright>
+        <PackageProjectUrl>https://www.jering.tech/utilities/web.syntaxhighlighters.highlightjs/index</PackageProjectUrl>
         <RepositoryUrl>https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS</RepositoryUrl>
         <PackageLicenseUrl>$(RepositoryUrl)/blob/master/License.txt</PackageLicenseUrl>
         <PackageReleaseNotes>$(RepositoryUrl)/blob/master/Changelog.md</PackageReleaseNotes>
@@ -34,7 +34,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Jering.Javascript.NodeJS" Version="4.0.1" />
+        <PackageReference Include="Jering.Javascript.NodeJS" Version="4.0.3" />
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
