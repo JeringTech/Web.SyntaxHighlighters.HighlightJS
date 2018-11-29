@@ -1,8 +1,10 @@
 ﻿using Jering.Javascript.NodeJS;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -11,8 +13,9 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
     public class HighlightJSServiceIntegrationTests : IDisposable
     {
         private IServiceProvider _serviceProvider;
+        private const int _timeoutMS = 60000;
 
-        [Theory]
+        [Theory(Timeout = _timeoutMS)]
         [MemberData(nameof(HighlightAsync_HighlightsCode_Data))]
         public async Task HighlightAsync_HighlightsCode(string dummyCode, string dummyLanguageName, string expectedResult)
         {
@@ -62,7 +65,47 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
             };
         }
 
-        [Theory]
+        [Fact(Timeout = _timeoutMS)]
+        public void HighlightAsync_IsThreadSafe()
+        {
+            // Arrange
+            const string dummyCode = @"public string ExampleFunction(string arg)
+{
+    // Example comment
+    return arg + ""dummyString"";
+}";
+            const string dummyLanguageAlias = "csharp";
+            IHighlightJSService testSubject = CreateHighlightJSService();
+
+            // Act
+            var results = new ConcurrentQueue<string>();
+            const int numThreads = 5;
+            var threads = new List<Thread>();
+            for (int i = 0; i < numThreads; i++)
+            {
+                var thread = new Thread(() => results.Enqueue(testSubject.HighlightAsync(dummyCode, dummyLanguageAlias).GetAwaiter().GetResult()));
+                threads.Add(thread);
+                thread.Start();
+            }
+            foreach (Thread thread in threads)
+            {
+                thread.Join();
+            }
+
+            // Assert
+            Assert.Equal(numThreads, results.Count);
+            foreach (string result in results)
+            {
+                Assert.Equal(@"<span class=""hljs-function""><span class=""hljs-keyword"">public</span> <span class=""hljs-keyword"">string</span> <span class=""hljs-title"">ExampleFunction</span>(<span class=""hljs-params""><span class=""hljs-keyword"">string</span> arg</span>)</span>
+{
+    <span class=""hljs-comment"">// Example comment</span>
+    <span class=""hljs-keyword"">return</span> arg + <span class=""hljs-string"">""dummyString""</span>;
+}",
+                result);
+            }
+        }
+
+        [Theory(Timeout = _timeoutMS)]
         [MemberData(nameof(HighlightAsync_ReplacesTabsWithTabReplaceIfTabReplaceIsNotNullOtherwiseDoesNotReplaceTabs_Data))]
         public async Task HighlightAsync_AppendsClassPrefixToClassesIfClassPrefixIsNotNullOtherwiseDoesNotAppendAnything(string dummyClassPrefix, string expectedResult)
         {
@@ -105,7 +148,7 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
             };
         }
 
-        [Theory]
+        [Theory(Timeout = _timeoutMS)]
         [MemberData(nameof(IsValidLanguageAliasAsync_ChecksIfLanguageAliasIsValid_Data))]
         public async Task IsValidLanguageAliasAsync_ChecksIfLanguageAliasIsValid(string dummyLanguageAlias, bool expectedResult)
         {
@@ -139,6 +182,36 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
                     "non-existent-language", false
                 }
             };
+        }
+
+        [Fact(Timeout = _timeoutMS)]
+        public void IsValidLanguageAliasAsync_IsThreadSafe()
+        {
+            // Arrange
+            const string dummyLanguageAlias = "csharp";
+            IHighlightJSService testSubject = CreateHighlightJSService();
+
+            // Act
+            var results = new ConcurrentQueue<bool>();
+            const int numThreads = 5;
+            var threads = new List<Thread>();
+            for (int i = 0; i < numThreads; i++)
+            {
+                var thread = new Thread(() => results.Enqueue(testSubject.IsValidLanguageAliasAsync(dummyLanguageAlias).GetAwaiter().GetResult()));
+                threads.Add(thread);
+                thread.Start();
+            }
+            foreach (Thread thread in threads)
+            {
+                thread.Join();
+            }
+
+            // Assert
+            Assert.Equal(numThreads, results.Count);
+            foreach (bool result in results)
+            {
+                Assert.True(result);
+            }
         }
 
         private IHighlightJSService CreateHighlightJSService()
