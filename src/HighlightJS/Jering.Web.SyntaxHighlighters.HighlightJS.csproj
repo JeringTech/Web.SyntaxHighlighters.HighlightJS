@@ -7,7 +7,7 @@
         <Title>Use the Syntax Highlighter, HighlightJS, from C#</Title>
         <Description>Jering.Web.SyntaxHighlighters.HighlightJS enables you to perform syntax highlighting from C# projects using Highlight.js.</Description>
         <Copyright>© 2018 Jering. All rights reserved.</Copyright>
-        <PackageProjectUrl>https://www.jering.tech/utilities/web.syntaxhighlighters.highlightjs/index</PackageProjectUrl>
+        <PackageProjectUrl>https://www.jering.tech/utilities/jering.web.syntaxhighlighters.highlightjs/index</PackageProjectUrl>
         <RepositoryUrl>https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS</RepositoryUrl>
         <PackageLicenseUrl>$(RepositoryUrl)/blob/master/License.txt</PackageLicenseUrl>
         <PackageReleaseNotes>$(RepositoryUrl)/blob/master/Changelog.md</PackageReleaseNotes>

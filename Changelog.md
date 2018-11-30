@@ -3,7 +3,11 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [The Semantic Versioning Lifecycle](https://www.JeringTech.com/articles/the-semantic-versioning-lifecycle)
 for an overview of semantic versioning.
 
-## [Unreleased](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.0.0...HEAD)
+## [Unreleased](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.0.1...HEAD)
+
+## [3.0.1](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.0.0...3.0.1) - Nov 30, 2018
+### Changes
+- Changed project URL from `jering.tech/utilities/web.syntaxhighlighters.highlightjs` to `jering.tech/utilities/jering.web.syntaxhighlighters.highlightjs` for consistency with other Jering projects.
 
 ## [3.0.0](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/2.2.0...3.0.0) - Nov 29, 2018
 ### Additions
