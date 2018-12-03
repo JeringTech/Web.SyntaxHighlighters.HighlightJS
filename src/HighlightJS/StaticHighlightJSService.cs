@@ -11,31 +11,50 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS
     /// </summary>
     public static class StaticHighlightJSService
     {
-        private static IServiceCollection _services;
-        private static ServiceProvider _serviceProvider;
-        private static IHighlightJSService _HighlightJSService;
+        private static volatile ServiceProvider _serviceProvider;
+        private static volatile IServiceCollection _services;
+        private static volatile IHighlightJSService _highlightJSService;
+        private static readonly object _createLock = new object();
 
         private static IHighlightJSService GetOrCreateHighlightJSService()
         {
-            if (_HighlightJSService != null && _services == null)
+            if (_highlightJSService == null || _services != null)
             {
-                // HighlightJSService already exists and no configuration pending
-                return _HighlightJSService;
+                lock (_createLock)
+                {
+                    if (_highlightJSService == null || _services != null)
+                    {
+                        // Dispose of service provider
+                        _serviceProvider?.Dispose();
+
+                        // Create new service provider
+                        (_services ?? (_services = new ServiceCollection())).AddHighlightJS();
+                        _serviceProvider = _services.BuildServiceProvider();
+                        _services = null;
+
+                        _highlightJSService = _serviceProvider.GetRequiredService<IHighlightJSService>();
+                    }
+                }
             }
 
-            // Dispose of service provider
-            _serviceProvider?.Dispose();
-
-            // Create new service provider
-            (_services ?? (_services = new ServiceCollection())).AddHighlightJS();
-            _serviceProvider = _services.BuildServiceProvider();
-            _services = null;
-
-            return _HighlightJSService = _serviceProvider.GetRequiredService<IHighlightJSService>();
+            // HighlightJSService already exists and no configuration pending
+            return _highlightJSService;
         }
 
         /// <summary>
-        /// Configures options.
+        /// <para>Disposes the underlying <see cref="IServiceProvider"/> used to resolve <see cref="IHighlightJSService"/>.</para>
+        /// <para>This method is not thread safe.</para>
+        /// </summary>
+        public static void DisposeServiceProvider()
+        {
+            _serviceProvider?.Dispose();
+            _serviceProvider = null;
+            _highlightJSService = null;
+        }
+
+        /// <summary>
+        /// <para>Configures options.</para>
+        /// <para>This method is not thread safe.</para>
         /// </summary>
         /// <typeparam name="T">The type of options to configure.</typeparam>
         /// <param name="configureOptions">The action that configures the options.</param>

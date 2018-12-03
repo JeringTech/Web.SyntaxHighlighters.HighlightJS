@@ -1,5 +1,7 @@
 ﻿using Jering.Javascript.NodeJS;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -24,6 +26,37 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
 
             // Reset so other tests aren't affected
             StaticHighlightJSService.Configure<OutOfProcessNodeJSServiceOptions>(options => options.TimeoutMS = 60000);
+        }
+
+        [Fact(Timeout = _timeoutMS)]
+        public async void DisposeServiceProvider_DisposesServiceProvider()
+        {
+            // Arrange
+            StaticHighlightJSService.Configure<OutOfProcessNodeJSServiceOptions>(options => options.TimeoutMS = 0);
+            // Highlight once to ensure that an initial HighlightJSService is created.
+            try
+            {
+                await StaticHighlightJSService.IsValidLanguageAliasAsync("csharp").ConfigureAwait(false); // Throws since TimeoutMS == 0
+            }
+            catch
+            {
+                // Do nothing 
+            }
+
+            // Act
+            StaticHighlightJSService.DisposeServiceProvider(); // Dispose, the next call should not be affected by TimeoutMS = 0
+            string result = await StaticHighlightJSService.HighlightAsync(@"public string ExampleFunction(string arg)
+{
+    // Example comment
+    return arg + ""dummyString"";
+}", "csharp").ConfigureAwait(false);
+
+            // Assert
+            Assert.Equal(@"<span class=""hljs-function""><span class=""hljs-keyword"">public</span> <span class=""hljs-keyword"">string</span> <span class=""hljs-title"">ExampleFunction</span>(<span class=""hljs-params""><span class=""hljs-keyword"">string</span> arg</span>)</span>
+{
+    <span class=""hljs-comment"">// Example comment</span>
+    <span class=""hljs-keyword"">return</span> arg + <span class=""hljs-string"">""dummyString""</span>;
+}", result);
         }
 
         [Theory(Timeout = _timeoutMS)]
@@ -71,6 +104,45 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
 }"
                 }
             };
+        }
+
+        [Fact(Timeout = _timeoutMS)]
+        public void HighlightAsync_IsThreadSafe()
+        {
+            // Arrange
+            const string dummyCode = @"public string ExampleFunction(string arg)
+{
+    // Example comment
+    return arg + ""dummyString"";
+}";
+            const string dummyLanguageAlias = "csharp";
+
+            // Act
+            var results = new ConcurrentQueue<string>();
+            const int numThreads = 5;
+            var threads = new List<Thread>();
+            for (int i = 0; i < numThreads; i++)
+            {
+                var thread = new Thread(() => results.Enqueue(StaticHighlightJSService.HighlightAsync(dummyCode, dummyLanguageAlias).GetAwaiter().GetResult()));
+                threads.Add(thread);
+                thread.Start();
+            }
+            foreach (Thread thread in threads)
+            {
+                thread.Join();
+            }
+
+            // Assert
+            const string expectedResult = @"<span class=""hljs-function""><span class=""hljs-keyword"">public</span> <span class=""hljs-keyword"">string</span> <span class=""hljs-title"">ExampleFunction</span>(<span class=""hljs-params""><span class=""hljs-keyword"">string</span> arg</span>)</span>
+{
+    <span class=""hljs-comment"">// Example comment</span>
+    <span class=""hljs-keyword"">return</span> arg + <span class=""hljs-string"">""dummyString""</span>;
+}";
+            Assert.Equal(numThreads, results.Count);
+            foreach (string result in results)
+            {
+                Assert.Equal(expectedResult, result);
+            }
         }
 
         [Theory(Timeout = _timeoutMS)]
