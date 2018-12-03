@@ -3,7 +3,13 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [The Semantic Versioning Lifecycle](https://www.JeringTech.com/articles/the-semantic-versioning-lifecycle)
 for an overview of semantic versioning.
 
-## [Unreleased](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.0.1...HEAD)
+## [Unreleased](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.1.0...HEAD)
+
+## [3.1.0](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.0.1...3.1.0) - Dec 3, 2018
+### Additions
+- Added `StaticHighlightJSService.DisposeServiceProvider`.
+### Fixes
+- `StaticHighlightJSService.Invoke*` methods are now thread-safe.
 
 ## [3.0.1](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.0.0...3.0.1) - Nov 30, 2018
 ### Changes
