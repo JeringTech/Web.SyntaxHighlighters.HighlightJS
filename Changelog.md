@@ -1,6 +1,6 @@
 # Changelog
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html). Refer to 
-[The Semantic Versioning Lifecycle](https://www.JeringTech.com/articles/the-semantic-versioning-lifecycle)
+[The Semantic Versioning Lifecycle](https://www.jering.tech/articles/the-semantic-versioning-lifecycle)
 for an overview of semantic versioning.
 
 ## [Unreleased](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.1.0...HEAD)
@@ -13,7 +13,7 @@ for an overview of semantic versioning.
 
 ## [3.0.1](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.0.0...3.0.1) - Nov 30, 2018
 ### Changes
-- Changed project URL from `jering.tech/utilities/web.syntaxhighlighters.highlightjs` to `jering.tech/utilities/jering.web.syntaxhighlighters.highlightjs` for consistency with other Jering projects.
+- Changed project URL (used by NuGet.org) from `jering.tech/utilities/web.syntaxhighlighters.highlightjs` to `jering.tech/utilities/jering.web.syntaxhighlighters.highlightjs` for consistency with other Jering projects.
 
 ## [3.0.0](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/2.2.0...3.0.0) - Nov 29, 2018
 ### Additions
@@ -45,12 +45,12 @@ namespace `Jering.Web.SyntaxHighlighters.HighlightJS` instead of `Jering.WebUtil
 - Added .NET Standard 1.3 as a target framework.
 
 ## [1.1.0](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/1.0.1...1.1.0) - Jul 25, 2018
+### Additions
+- Added XML comments in Nuget package.
 ### Changes
 - Replaced [Microsoft.AspNetCore.NodeServices](https://github.com/aspnet/JavaScriptServices/tree/master/src/Microsoft.AspNetCore.NodeServices) with 
   [JavascriptUtils.NodeJS](https://github.com/JeringTech/JavascriptUtils.NodeJS) for IPC with Node.js.
 - Renamed assembly to Jering.WebUtils.SyntaxHighlighters.HighlightJS.
-### Additions
-- Added XML comments in Nuget package.
 
 ## [1.0.1](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/1.0.0...1.0.1) - Jul 3, 2018
 ### Fixes
