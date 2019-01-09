@@ -1,5 +1,5 @@
 # Jering.Web.SyntaxHighlighters.HighlightJS
-[![Build Status](https://dev.azure.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/_apis/build/status/Jering.Web.SyntaxHighlighters.HighlightJS-CI)](https://dev.azure.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/_build/latest?definitionId=4)
+[![Build Status](https://dev.azure.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/_apis/build/status/Jering.Web.SyntaxHighlighters.HighlightJS-CI?branchName=master)](https://dev.azure.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/_build/latest?definitionId=4?branchName=master)
 [![codecov](https://codecov.io/gh/JeringTech/Web.SyntaxHighlighters.HighlightJS/branch/master/graph/badge.svg)](https://codecov.io/gh/JeringTech/Web.SyntaxHighlighters.HighlightJS)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/Pkcs11Interop/Pkcs11Interop/blob/master/LICENSE.md)
 [![NuGet](https://img.shields.io/nuget/vpre/Jering.Web.SyntaxHighlighters.HighlightJS.svg?label=nuget)](https://www.nuget.org/packages/Jering.Web.SyntaxHighlighters.HighlightJS/)
