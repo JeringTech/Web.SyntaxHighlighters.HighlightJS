@@ -8,3 +8,5 @@ mimo_shareOnTwitter:
     hashtags: CSharp,DotNet,SyntaxHighlighter,HighlightJS
     via: JeringTech
 ---
+
+Work in progress. For now, the documentation for this project can be found [here](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS).
