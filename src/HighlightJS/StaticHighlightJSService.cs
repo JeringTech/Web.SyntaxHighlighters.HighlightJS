@@ -30,9 +30,10 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS
                         // Create new service provider
                         (_services ?? (_services = new ServiceCollection())).AddHighlightJS();
                         _serviceProvider = _services.BuildServiceProvider();
-                        _services = null;
-
                         _highlightJSService = _serviceProvider.GetRequiredService<IHighlightJSService>();
+
+                        // Only set to null after new _highlightJSService is initialized, otherwise another thread might skip the lock and try to use the old _highlightJSService
+                        _services = null;
                     }
                 }
             }
