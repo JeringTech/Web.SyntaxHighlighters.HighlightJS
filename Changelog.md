@@ -3,7 +3,14 @@ This project uses [semantic versioning](http://semver.org/spec/v2.0.0.html). Ref
 *[Semantic Versioning in Practice](https://www.jering.tech/articles/semantic-versioning-in-practice)*
 for an overview of semantic versioning.
 
-## [Unreleased](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.1.0...HEAD)
+## [Unreleased](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.1.1...HEAD)
+
+## [3.1.1](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.1.0...3.1.1) - Jan 19, 2018
+### Changes
+- Bumped `Jering.Javascript.NodeJS` to `4.1.1`.
+### Fixes
+- Fixed `StaticHighlightJSService` concurrency issue. ([8910037](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/pull/6/commits/8910037d9ea0b79887ff34613a09ef30042e6a2d))
+- Fixed NuGet package's `PackageLicenseUrl` metadata.
 
 ## [3.1.0](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.0.1...3.1.0) - Dec 3, 2018
 ### Additions
