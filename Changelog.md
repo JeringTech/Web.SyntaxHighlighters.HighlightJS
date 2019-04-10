@@ -3,9 +3,13 @@ This project uses [semantic versioning](http://semver.org/spec/v2.0.0.html). Ref
 *[Semantic Versioning in Practice](https://www.jering.tech/articles/semantic-versioning-in-practice)*
 for an overview of semantic versioning.
 
-## [Unreleased](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.1.1...HEAD)
+## [Unreleased](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.2.1...HEAD)
 
-## [3.1.1](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.1.0...3.1.1) - Jan 19, 2018
+## [3.2.1](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.1.1...3.2.1) - Apr 10, 2019
+### Changes
+- Bumped some dependencies. ([aafb014](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/pull/7/commits/aafb014764612e3602d16550c0cc5ff585706b64))
+
+## [3.1.1](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.1.0...3.1.1) - Jan 19, 2019
 ### Changes
 - Bumped `Jering.Javascript.NodeJS` to `4.1.1`.
 ### Fixes
