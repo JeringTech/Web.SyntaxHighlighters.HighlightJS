@@ -67,8 +67,14 @@
         </EmbeddedResource>
     </ItemGroup>
 
-    <!-- inputs and outputs https://docs.microsoft.com/en-sg/visualstudio/msbuild/how-to-build-incrementally -->
-    <Target Name="JavascriptBuild" BeforeTargets="DispatchToInnerBuilds" Inputs="@(JavascriptInputs)" Outputs="@(JavascriptOutputs)">
+    <!-- 
+    <Target Name="JavascriptBuild" BeforeTargets="DispatchToInnerBuilds" Inputs="@(JavascriptInputs)" Outputs="@(JavascriptOutputs)">	        Notes on BeforeTargets: DispatchToInnerBuilds only runs if we're multi-targeting. PreBuildEvent runs before builds for each framework. 
+        If BeforeTargets contains only DispatchToInnerBuilds and we specify a framework when we call dotnet build, JavascriptBuild does not run.
+        If BeforeTargets contains only PreBuildEvent and we multi-target, JavascriptBuild runs multiple times in parallel.
+        So we must specify both. This way if we are multi-targeting, JavascriptBuild runs once, before DispatchToInnerBuilds after which inputs == outputs. 
+        If we aren't multi-targeting, JavascriptBuild runs before PreBuildEvent.
+    -->
+    <Target Name="JavascriptBuild" BeforeTargets="DispatchToInnerBuilds;PreBuildEvent" Inputs="@(JavascriptInputs)" Outputs="@(JavascriptOutputs)">
         <Yarn WorkingDirectory=".\Javascript" Command="run build --env.mode=$(Configuration) --env.bundleName=$(BundleName)" />
     </Target>
 
