@@ -139,7 +139,7 @@ string code = @"public string ExampleFunction(string arg)
 
 string highlightedCode = await highlightJSService.HighlightAsync(code, "csharp");
 ```
-The second parameter of `IHighlightJSService.HighlightAsync` must be a valid [HighlightJS language alias](http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#language-names-and-aliases).
+The second parameter of `IHighlightJSService.HighlightAsync` must be a valid [HighlightJS language alias](https://github.com/highlightjs/highlight.js/tree/master/src/languages).
 
 ## API
 ### IHighlightJSService.HighlightAsync
@@ -155,7 +155,7 @@ Highlights code of a specified language.
   - Description: Code to highlight.
 - `languageAlias`
   - Type: `string`
-  - Description: A HighlightJS language alias. Visit http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#language-names-and-aliases for the list of valid language aliases.
+  - Description: A HighlightJS language alias. Visit https://github.com/highlightjs/highlight.js/tree/master/src/languages for the list of valid language aliases.
 - `classPrefix`
   - Type: `string`
   - Description: If not null or whitespace, this string will be appended to HighlightJS classes. Defaults to `hljs-`.
@@ -195,7 +195,7 @@ Determines whether a language alias is valid.
 #### Parameters
 - `languageAlias`
   - Type: `string`
-  - Description: Language alias to validate. Visit http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#language-names-and-aliases for the list of valid language aliases.
+  - Description: Language alias to validate. Visit https://github.com/highlightjs/highlight.js/tree/master/src/languages for the list of valid language aliases.
 #### Returns
 `true` if `languageAlias` is a valid HighlightJS language alias. Otherwise, `false`.
 #### Exceptions

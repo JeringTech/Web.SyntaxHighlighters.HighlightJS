@@ -62,7 +62,7 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &quot;{0}&quot; is not a valid HighlightJS language alias. Visit http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#language-names-and-aliases for the list of language aliases..
+        ///   Looks up a localized string similar to &quot;{0}&quot; is not a valid HighlightJS language alias. Visit https://github.com/highlightjs/highlight.js/tree/master/src/languages for the list of language aliases..
         /// </summary>
         internal static string Exception_InvalidHighlightJSLanguageAlias {
             get {
