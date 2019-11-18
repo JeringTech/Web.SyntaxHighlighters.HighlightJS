@@ -3,7 +3,12 @@ This project uses [semantic versioning](http://semver.org/spec/v2.0.0.html). Ref
 *[Semantic Versioning in Practice](https://www.jering.tech/articles/semantic-versioning-in-practice)*
 for an overview of semantic versioning.
 
-## [Unreleased](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.2.1...HEAD)
+## [Unreleased](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.3.0...HEAD)
+
+## [3.3.0](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.2.1...3.3.0) - Nov 18, 2019
+### Changes
+- Bumped HighlightJS to 9.16.2. ([9864859](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/commit/9864859cc7840d39e71d48bdd5ab7c12e36ccd1c))
+- Bumped NuGet dependencies. ([004a6e9](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/commit/004a6e9b30769683da5a520219bcf8573142419c))
 
 ## [3.2.1](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.1.1...3.2.1) - Apr 10, 2019
 ### Changes
