@@ -1,4 +1,4 @@
-﻿using Jering.Javascript.NodeJS;
+using Jering.Javascript.NodeJS;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,7 +14,7 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS
         /// Highlights code of a specified language.
         /// </summary>
         /// <param name="code">Code to highlight.</param>
-        /// <param name="languageAlias">A HighlightJS language alias. Visit http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#language-names-and-aliases 
+        /// <param name="languageAlias">A HighlightJS language alias. Visit https://github.com/highlightjs/highlight.js/tree/master/src/languages
         /// for the list of valid language aliases.</param>
         /// <param name="classPrefix">If not null or whitespace, this string will be appended to HighlightJS classes. Defaults to "hljs-".</param>
         /// <param name="cancellationToken">The cancellation token for the asynchronous operation.</param>
@@ -29,7 +29,7 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS
         /// <summary>
         /// Determines whether a language alias is valid.
         /// </summary>
-        /// <param name="languageAlias">Language alias to validate. Visit http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#language-names-and-aliases 
+        /// <param name="languageAlias">Language alias to validate. Visit https://github.com/highlightjs/highlight.js/tree/master/src/languages 
         /// for the list of valid language aliases.</param>
         /// <param name="cancellationToken">The cancellation token for the asynchronous operation.</param>
         /// <returns>true if the specified language alias is a valid HighlightJS language alias. Otherwise, false.</returns>

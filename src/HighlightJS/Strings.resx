@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Exception_InvalidHighlightJSLanguageAlias" xml:space="preserve">
-    <value>"{0}" is not a valid HighlightJS language alias. Visit http://highlightjs.readthedocs.io/en/latest/css-classes-reference.html#language-names-and-aliases for the list of language aliases.</value>
+    <value>"{0}" is not a valid HighlightJS language alias. Visit https://github.com/highlightjs/highlight.js/tree/master/src/languages for the list of language aliases.</value>
   </data>
   <data name="Exception_ParameterCannotBeNull" xml:space="preserve">
     <value>Parameter cannot be null.</value>

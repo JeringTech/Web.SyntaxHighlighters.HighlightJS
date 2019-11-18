@@ -6,7 +6,7 @@
         <Authors>JeremyTCD</Authors>
         <Title>Use the Syntax Highlighter, HighlightJS, from C#</Title>
         <Description>Jering.Web.SyntaxHighlighters.HighlightJS enables you to perform syntax highlighting from C# projects using Highlight.js.</Description>
-        <Copyright>© 2018 Jering. All rights reserved.</Copyright>
+        <Copyright>© 2018-2019 Jering. All rights reserved.</Copyright>
         <PackageProjectUrl>https://www.jering.tech/utilities/jering.web.syntaxhighlighters.highlightjs/index</PackageProjectUrl>
         <RepositoryUrl>https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS</RepositoryUrl>
         <PackageLicenseUrl>$(RepositoryUrl)/blob/master/License.md</PackageLicenseUrl>
@@ -34,22 +34,22 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Jering.Javascript.NodeJS" Version="4.2.2" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02">
+        <PackageReference Include="Jering.Javascript.NodeJS" Version="4.3.0" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19554-01">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.2" />
-        <PackageReference Include="Roslynator.Analyzers" Version="2.0.0" PrivateAssets="all" ExcludeAssets="Runtime">
+        <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.3" />
+        <PackageReference Include="Roslynator.Analyzers" Version="2.2.0" PrivateAssets="all" ExcludeAssets="Runtime">
           <IncludeAssets>compile; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Roslynator.CodeFixes" Version="2.0.0" PrivateAssets="all" ExcludeAssets="Runtime">
           <IncludeAssets>compile; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Yarn.MSBuild" Version="1.13.0" PrivateAssets="all" ExcludeAssets="Runtime">
+        <PackageReference Include="Yarn.MSBuild" Version="1.16.0" PrivateAssets="all" ExcludeAssets="Runtime">
           <IncludeAssets>compile; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -67,8 +67,14 @@
         </EmbeddedResource>
     </ItemGroup>
 
-    <!-- inputs and outputs https://docs.microsoft.com/en-sg/visualstudio/msbuild/how-to-build-incrementally -->
-    <Target Name="JavascriptBuild" BeforeTargets="DispatchToInnerBuilds" Inputs="@(JavascriptInputs)" Outputs="@(JavascriptOutputs)">
+    <!-- 
+    <Target Name="JavascriptBuild" BeforeTargets="DispatchToInnerBuilds" Inputs="@(JavascriptInputs)" Outputs="@(JavascriptOutputs)">	        Notes on BeforeTargets: DispatchToInnerBuilds only runs if we're multi-targeting. PreBuildEvent runs before builds for each framework. 
+        If BeforeTargets contains only DispatchToInnerBuilds and we specify a framework when we call dotnet build, JavascriptBuild does not run.
+        If BeforeTargets contains only PreBuildEvent and we multi-target, JavascriptBuild runs multiple times in parallel.
+        So we must specify both. This way if we are multi-targeting, JavascriptBuild runs once, before DispatchToInnerBuilds after which inputs == outputs. 
+        If we aren't multi-targeting, JavascriptBuild runs before PreBuildEvent.
+    -->
+    <Target Name="JavascriptBuild" BeforeTargets="DispatchToInnerBuilds;PreBuildEvent" Inputs="@(JavascriptInputs)" Outputs="@(JavascriptOutputs)">
         <Yarn WorkingDirectory=".\Javascript" Command="run build --env.mode=$(Configuration) --env.bundleName=$(BundleName)" />
     </Target>
 

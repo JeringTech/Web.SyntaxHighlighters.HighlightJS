@@ -1,12 +1,11 @@
 {
     "private": true,
     "scripts": {
-        "build": "echo. && echo Yarn Install: && yarn install && echo. && echo Webpack: && webpack"
+        "build": "echo ------ Yarn Install ------ && yarn install && echo ------ Webpack Compile ------ && webpack"
     },
     "dependencies": {
-        "@types/highlight.js": "^9.12.3",
-        "highlight.js": "^9.13.1",
-        "webpack": "^4.26.1",
-        "webpack-cli": "^3.1.2"
+        "highlight.js": "^9.16.2",
+        "webpack": "^4.41.2",
+        "webpack-cli": "^3.3.10"
     }
 }
