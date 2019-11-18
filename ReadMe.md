@@ -9,17 +9,19 @@
 [Target Frameworks](#target-frameworks)  
 [Prerequisites](#prerequisites)  
 [Installation](#installation)  
-[Concepts](#concepts)  
 [Usage](#usage)  
 [API](#api)  
-[Building](#building)  
-[Related Projects](#related-projects)  
+[Building and Testing](#building-and-testing)  
+[Related Jering Projects](#related-jering-projects)  
+[Related Concepts](#related-concepts)  
 [Contributing](#contributing)  
 [About](#about)
 
 ## Overview
 Jering.Web.SyntaxHighlighters.HighlightJS enables you to perform syntax highlighting from C# projects using [HighlightJS](http://highlightjs.readthedocs.io/en/latest/index.html).
-Here is an example usage of this library:
+This library is built to be flexible; you can use a dependency injection (DI) based API or a static API.
+
+Here is an example of syntax highlighting using the static API:
 
 ```csharp
 string code = @"public string ExampleFunction(string arg)
@@ -41,12 +43,38 @@ string syntaxHighlightedCode = @"<span class=""hljs-function""><span class=""hlj
 Assert.Equal(syntaxHighlightedCode, result);
 ```
 
+And here is an example of syntax highlighting using the DI based API:
+
+```csharp
+string code = @"public string ExampleFunction(string arg)
+{
+    // Example comment
+    return arg + ""dummyString"";
+}";
+
+// Highlight code
+var services = new ServiceCollection();
+services.AddHighlightJS();
+ServiceProvider serviceProvider = services.BuildServiceProvider();
+IHighlightJSService highlightJSService = serviceProvider.GetRequiredService<IHighlightJSService>();
+string result = await highlightJSService.HighlightAsync(code, "csharp");
+
+string syntaxHighlightedCode = @"<span class=""hljs-function""><span class=""hljs-keyword"">public</span> <span class=""hljs-keyword"">string</span> <span class=""hljs-title"">ExampleFunction</span>(<span class=""hljs-params""><span class=""hljs-keyword"">string</span> arg</span>)</span>
+{
+    <span class=""hljs-comment"">// Example comment</span>
+    <span class=""hljs-keyword"">return</span> arg + <span class=""hljs-string"">""dummyString""</span>;
+}";
+// result == syntax highlighted code
+Assert.Equal(syntaxHighlightedCode, result);
+```
+
 ## Target Frameworks
 - .NET Standard 2.0
 - .NET Framework 4.6.1
  
 ## Prerequisites
 [NodeJS](https://nodejs.org/en/) must be installed and node.exe's directory must be added to the `Path` environment variable.
+This library has been tested with NodeJS 10.5.2 - 12.13.0.
 
 ## Installation
 Using Package Manager:
@@ -57,35 +85,6 @@ Using .Net CLI:
 ```
 > dotnet add package Jering.Web.SyntaxHighlighters.HighlightJS
 ```
-
-## Concepts
-### What is a Syntax Highlighter?
-Syntax highlighters add markup to code to facilitate styling. For example, the following code:
-
-```csharp
-public string ExampleFunction(string arg)
-{
-    // Example comment
-    return arg + "dummyString";
-}
-```
-
-is transformed into the following markup by the syntax highlighter HighlightJS:
-
-```html
-<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> <span class="hljs-title">ExampleFunction</span>(<span class="hljs-params"><span class="hljs-keyword">string</span> arg</span>)
-</span>{
-    <span class="hljs-comment">// Example comment</span>
-    <span class="hljs-keyword">return</span> arg + <span class="hljs-string">"dummyString"</span>;
-}
-```
-
-HighlightJS is a a javascript library, which is ideal since syntax highlighting is often done client-side. There are however, situations where syntax highlighting can't or shouldn't be done client-side, for example:
-- When generating [AMP](https://www.ampproject.org/) pages, since AMP pages cannot run scripts.
-- When page load time is critical.
-- When page size is critical.
-
-This library allows syntax highlighting to be done by .Net server-side applications and tools like static site generators.
 
 ## Usage
 ### Creating IHighlightJSService
@@ -130,7 +129,7 @@ string result = await StaticHighlightJSService.HighlightAsync(code, "csharp");
 The following section on using `IHighlightJSService` applies to usage of `StaticHighlightJSService`.
 
 ### Using IHighlightJSService
-Code can be highlighted using [`IHighlightJSService.HighlightAsync`](#ihighlightjsservice.highlightasync):
+Code can be highlighted using [`IHighlightJSService.HighlightAsync`](#ihighlightjsservicehighlightasync):
 ```csharp
 string code = @"public string ExampleFunction(string arg)
 {
@@ -232,8 +231,8 @@ it returns the context of every highlight call, allowing subsequent calls to con
 Making multiple highlight calls with the continuation feature is equivalent to concatenating the code and making a single highlight call. For this wrapper,
 a single highlight call is far more performant since it minimizes time spent on object marshalling and inter-process communication.
 
-## Building
-This project can be built using Visual Studio 2017.
+## Building and Testing
+You can build and test this project in Visual Studio 2017/2019.
 
 ## Related Jering Projects
 #### Similar Projects
@@ -242,6 +241,35 @@ This project can be built using Visual Studio 2017.
 [Jering.Markdig.Extensions.FlexiBlocks](https://github.com/JeringTech/Markdig.Extensions.FlexiBlocks) - A Collection of Flexible Markdig Extensions.
 #### Projects this Library Uses
 [Jering.Javascript.NodeJS](https://github.com/JeringTech/Javascript.NodeJS) - Invoke Javascript in NodeJS, from C#.
+
+## Related Concepts
+### What is a Syntax Highlighter?
+Syntax highlighters add markup to code to facilitate styling. For example, the following code:
+
+```csharp
+public string ExampleFunction(string arg)
+{
+    // Example comment
+    return arg + "dummyString";
+}
+```
+
+is transformed into the following markup by the syntax highlighter HighlightJS:
+
+```html
+<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> <span class="hljs-title">ExampleFunction</span>(<span class="hljs-params"><span class="hljs-keyword">string</span> arg</span>)
+</span>{
+    <span class="hljs-comment">// Example comment</span>
+    <span class="hljs-keyword">return</span> arg + <span class="hljs-string">"dummyString"</span>;
+}
+```
+
+HighlightJS is a a javascript library, which is ideal since syntax highlighting is often done client-side. There are however, situations where syntax highlighting can't or shouldn't be done client-side, for example:
+- When generating [AMP](https://www.ampproject.org/) pages, since AMP pages cannot run scripts.
+- When page load time is critical.
+- When page size is critical.
+
+This library allows syntax highlighting to be done by .Net server-side applications and tools like static site generators.
 
 ## Contributing
 Contributions are welcome!  
