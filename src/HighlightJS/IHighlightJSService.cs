@@ -24,7 +24,7 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS
         /// <exception cref="InvocationException">Thrown if a NodeJS error occurs.</exception>
         /// <exception cref="ObjectDisposedException">Thrown if this instance has been disposed or if an attempt is made to use one of its dependencies that has been disposed.</exception>
         /// <exception cref="OperationCanceledException">Thrown if <paramref name="cancellationToken"/> is cancelled.</exception>
-        Task<string> HighlightAsync(string code, string languageAlias, string classPrefix = "hljs-", CancellationToken cancellationToken = default);
+        Task<string?> HighlightAsync(string code, string languageAlias, string classPrefix = "hljs-", CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Determines whether a language alias is valid.

@@ -14,20 +14,20 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
     public class HighlightJSServiceUnitTests
     {
         private readonly MockRepository _mockRepository = new MockRepository(MockBehavior.Default) { DefaultValue = DefaultValue.Mock };
-        private const int _timeoutMS = 60000;
+        private const int TIMEOUT_MS = 60000;
 
         [Fact]
         public void Constructor_ThrowsArgumentNullExceptionIfNodeJSServiceIsNull()
         {
             // Act and assert
-            Assert.Throws<ArgumentNullException>(() => new HighlightJSService(null, _mockRepository.Create<IEmbeddedResourcesService>().Object));
+            Assert.Throws<ArgumentNullException>(() => new HighlightJSService(null!, _mockRepository.Create<IEmbeddedResourcesService>().Object));
         }
 
         [Fact]
         public void Constructor_ThrowsArgumentNullExceptionIfEmbeddedResourcesServiceIsNull()
         {
             // Act and assert
-            Assert.Throws<ArgumentNullException>(() => new HighlightJSService(_mockRepository.Create<INodeJSService>().Object, null));
+            Assert.Throws<ArgumentNullException>(() => new HighlightJSService(_mockRepository.Create<INodeJSService>().Object, null!));
         }
 
         [Fact]
@@ -39,7 +39,7 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
 
             // Act and assert
             ObjectDisposedException result = await Assert.
-                ThrowsAsync<ObjectDisposedException>(async () => await testSubject.HighlightAsync(null, null).ConfigureAwait(false)).
+                ThrowsAsync<ObjectDisposedException>(async () => await testSubject.HighlightAsync(null!, null!).ConfigureAwait(false)).
                 ConfigureAwait(false);
         }
 
@@ -47,14 +47,14 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
         public async Task HighlightAsync_ThrowsArgumentNullExceptionIfCodeIsNull()
         {
             // Arrange
-            using (HighlightJSService testSubject = CreateHighlightJSService())
-            {
-                // Act and assert
-                ArgumentNullException result = await Assert.
-                    ThrowsAsync<ArgumentNullException>(async () => await testSubject.HighlightAsync(null, null).ConfigureAwait(false)).
-                    ConfigureAwait(false);
-                Assert.Equal($"{Strings.Exception_ParameterCannotBeNull}\nParameter name: code", result.Message, ignoreLineEndingDifferences: true);
-            }
+            using HighlightJSService testSubject = CreateHighlightJSService();
+
+            // Act and assert
+            ArgumentNullException result = await Assert.
+                ThrowsAsync<ArgumentNullException>(async () => await testSubject.HighlightAsync(null!, null!).ConfigureAwait(false)).
+                ConfigureAwait(false);
+
+            Assert.StartsWith(Strings.Exception_ParameterCannotBeNull, result.Message);
         }
 
         [Theory]
@@ -62,14 +62,13 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
         public async Task HighlightAsync_ReturnsCodeIfCodeIsEmptyOrWhitespace(string dummyCode)
         {
             // Arrange
-            using (HighlightJSService testSubject = CreateHighlightJSService())
-            {
-                // Act
-                string result = await testSubject.HighlightAsync(dummyCode, null).ConfigureAwait(false);
+            using HighlightJSService testSubject = CreateHighlightJSService();
 
-                // Assert
-                Assert.Equal(dummyCode, result);
-            }
+            // Act
+            string? result = await testSubject.HighlightAsync(dummyCode, null!).ConfigureAwait(false);
+
+            // Assert
+            Assert.Equal(dummyCode, result);
         }
 
         public static IEnumerable<object[]> HighlightAsync_ReturnsCodeIfCodeIsEmptyOrWhitespace_Data()
@@ -115,7 +114,7 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
             const string dummyClassPrefix = "dummyClassPrefix";
             Mock<INodeJSService> mockNodeJSService = _mockRepository.Create<INodeJSService>();
             mockNodeJSService.
-                Setup(n => n.TryInvokeFromCacheAsync<string>(HighlightJSService.MODULE_CACHE_IDENTIFIER,
+                Setup(n => n.TryInvokeFromCacheAsync<string>(HighlightJSService._moduleCacheIdentifier,
                     "highlight",
                     It.Is<object[]>(arr => arr[0].Equals(dummyCode) && arr[1].Equals(dummyLanguageAlias) && arr[2].Equals(dummyClassPrefix)),
                     default(CancellationToken))).
@@ -125,7 +124,7 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
             mockHighlightJSService.Setup(p => p.IsValidLanguageAliasAsync(dummyLanguageAlias, default(CancellationToken))).ReturnsAsync(true);
 
             // Act
-            string result = await mockHighlightJSService.Object.HighlightAsync(dummyCode, dummyLanguageAlias, dummyClassPrefix).ConfigureAwait(false);
+            string? result = await mockHighlightJSService.Object.HighlightAsync(dummyCode, dummyLanguageAlias, dummyClassPrefix).ConfigureAwait(false);
 
             // Assert
             Assert.Equal(dummyHighlightedCode, result);
@@ -147,14 +146,14 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
                 Returns(dummyStream);
             Mock<INodeJSService> mockNodeJSService = _mockRepository.Create<INodeJSService>();
             mockNodeJSService.
-                Setup(n => n.TryInvokeFromCacheAsync<string>(HighlightJSService.MODULE_CACHE_IDENTIFIER,
+                Setup(n => n.TryInvokeFromCacheAsync<string>(HighlightJSService._moduleCacheIdentifier,
                     "highlight",
                     It.Is<object[]>(arr => arr[0].Equals(dummyCode) && arr[1].Equals(dummyLanguageAlias) && arr[2].Equals(dummyClassPrefix)),
                     default(CancellationToken))).
                 ReturnsAsync((false, null));
             mockNodeJSService.
                 Setup(n => n.InvokeFromStreamAsync<string>(dummyStream,
-                    HighlightJSService.MODULE_CACHE_IDENTIFIER,
+                    HighlightJSService._moduleCacheIdentifier,
                     "highlight",
                     It.Is<object[]>(arr => arr[0].Equals(dummyCode) && arr[1].Equals(dummyLanguageAlias) && arr[2].Equals(dummyClassPrefix)),
                     default(CancellationToken))).
@@ -164,7 +163,7 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
             mockHighlightJSService.Setup(p => p.IsValidLanguageAliasAsync(dummyLanguageAlias, default(CancellationToken))).ReturnsAsync(true);
 
             // Act
-            string result = await mockHighlightJSService.Object.HighlightAsync(dummyCode, dummyLanguageAlias, dummyClassPrefix).ConfigureAwait(false);
+            string? result = await mockHighlightJSService.Object.HighlightAsync(dummyCode, dummyLanguageAlias, dummyClassPrefix).ConfigureAwait(false);
 
             // Assert
             Assert.Equal(dummyHighlightedCode, result);
@@ -180,7 +179,7 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
 
             // Act and assert
             ObjectDisposedException result = await Assert.
-                ThrowsAsync<ObjectDisposedException>(async () => await testSubject.IsValidLanguageAliasAsync(null, default(CancellationToken)).ConfigureAwait(false)).
+                ThrowsAsync<ObjectDisposedException>(async () => await testSubject.IsValidLanguageAliasAsync(null!, default(CancellationToken)).ConfigureAwait(false)).
                 ConfigureAwait(false);
         }
 
@@ -189,14 +188,12 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
         public async Task IsValidLanguageAliasAsync_ReturnsFalseIfLanguageAliasIsNullOrWhitespace(string dummyLanguageAlias)
         {
             // Arrange
-            using (HighlightJSService testSubject = CreateHighlightJSService())
-            {
-                // Act
-                bool result = await testSubject.IsValidLanguageAliasAsync(dummyLanguageAlias).ConfigureAwait(false);
+            using HighlightJSService testSubject = CreateHighlightJSService();
+            // Act
+            bool result = await testSubject.IsValidLanguageAliasAsync(dummyLanguageAlias).ConfigureAwait(false);
 
-                // Assert
-                Assert.False(result);
-            }
+            // Assert
+            Assert.False(result);
         }
 
         public static IEnumerable<object[]> IsValidLanguageAliasAsync_ReturnsFalseIfLanguageAliasIsNullOrWhitespace_Data()
@@ -205,7 +202,7 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
             {
                 new object[]
                 {
-                    null
+                    null!
                 },
                 new object[]
                 {
@@ -218,7 +215,7 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
             };
         }
 
-        [Theory(Timeout = _timeoutMS)]
+        [Theory(Timeout = TIMEOUT_MS)]
         [MemberData(nameof(IsValidLanguageAliasAsync_IfSuccessfulReturnsTrueIfAliasesContainsLanguageAliasAndFalseIfItDoesNot_Data))]
         public async Task IsValidLanguageAliasAsync_IfSuccessfulReturnsTrueIfAliasesContainsLanguageAliasAndFalseIfItDoesNot(
             string dummyLanguageAlias,
@@ -235,7 +232,7 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
             mockNodeJSService.
                 Setup(n => n.InvokeFromStreamAsync<string[]>(
                     dummyStream,
-                    HighlightJSService.MODULE_CACHE_IDENTIFIER,
+                    HighlightJSService._moduleCacheIdentifier,
                     "getAliases",
                     null,
                     default(CancellationToken))).
@@ -274,7 +271,7 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
             };
         }
 
-        [Fact(Timeout = _timeoutMS)]
+        [Fact(Timeout = TIMEOUT_MS)]
         public void IsValidLanguageAliasAsync_FirstThreadLazilyRetrievesAliases()
         {
             // Arrange
@@ -288,36 +285,34 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
             mockNodeJSService.
                 Setup(n => n.InvokeFromStreamAsync<string[]>(
                     dummyStream,
-                    HighlightJSService.MODULE_CACHE_IDENTIFIER,
+                    HighlightJSService._moduleCacheIdentifier,
                     "getAliases",
                     null,
                     default(CancellationToken))).
                 ReturnsAsync(new string[] { dummyLanguageAlias });
-            using (HighlightJSService testSubject = CreateHighlightJSService(mockNodeJSService.Object, mockEmbeddedResourcesService.Object))
+            using HighlightJSService testSubject = CreateHighlightJSService(mockNodeJSService.Object, mockEmbeddedResourcesService.Object);
+            // Act
+            var results = new ConcurrentQueue<bool>();
+            const int numThreads = 5;
+            var threads = new List<Thread>();
+            for (int i = 0; i < numThreads; i++)
             {
-                // Act
-                var results = new ConcurrentQueue<bool>();
-                const int numThreads = 5;
-                var threads = new List<Thread>();
-                for (int i = 0; i < numThreads; i++)
-                {
-                    var thread = new Thread(() => results.Enqueue(testSubject.IsValidLanguageAliasAsync(dummyLanguageAlias).GetAwaiter().GetResult()));
-                    threads.Add(thread);
-                    thread.Start();
-                }
-                foreach (Thread thread in threads)
-                {
-                    thread.Join();
-                }
+                var thread = new Thread(() => results.Enqueue(testSubject.IsValidLanguageAliasAsync(dummyLanguageAlias).GetAwaiter().GetResult()));
+                threads.Add(thread);
+                thread.Start();
+            }
+            foreach (Thread thread in threads)
+            {
+                thread.Join();
+            }
 
-                // Assert
-                _mockRepository.VerifyAll();
-                mockEmbeddedResourcesService.Verify(e => e.ReadAsStream(typeof(HighlightJSService).GetTypeInfo().Assembly, HighlightJSService.BUNDLE_NAME), Times.Once()); // Only called when aliases hasn't been instantiated
-                Assert.Equal(numThreads, results.Count);
-                foreach (bool result in results)
-                {
-                    Assert.True(result);
-                }
+            // Assert
+            _mockRepository.VerifyAll();
+            mockEmbeddedResourcesService.Verify(e => e.ReadAsStream(typeof(HighlightJSService).GetTypeInfo().Assembly, HighlightJSService.BUNDLE_NAME), Times.Once()); // Only called when aliases hasn't been instantiated
+            Assert.Equal(numThreads, results.Count);
+            foreach (bool result in results)
+            {
+                Assert.True(result);
             }
         }
 
@@ -336,13 +331,13 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
             mockNodeJSService.Verify(n => n.Dispose(), Times.Once());
         }
 
-        private HighlightJSService CreateHighlightJSService(INodeJSService nodeJSService = null, IEmbeddedResourcesService embeddedResourcesService = null)
+        private HighlightJSService CreateHighlightJSService(INodeJSService? nodeJSService = null, IEmbeddedResourcesService? embeddedResourcesService = null)
         {
             return new HighlightJSService(nodeJSService ?? _mockRepository.Create<INodeJSService>().Object,
                 embeddedResourcesService ?? _mockRepository.Create<IEmbeddedResourcesService>().Object);
         }
 
-        private Mock<HighlightJSService> CreateMockHighlightJSService(INodeJSService nodeJSService = null, IEmbeddedResourcesService embeddedResourcesService = null)
+        private Mock<HighlightJSService> CreateMockHighlightJSService(INodeJSService? nodeJSService = null, IEmbeddedResourcesService? embeddedResourcesService = null)
         {
             return _mockRepository.Create<HighlightJSService>(nodeJSService ?? _mockRepository.Create<INodeJSService>().Object,
                 embeddedResourcesService ?? _mockRepository.Create<IEmbeddedResourcesService>().Object);

@@ -14,14 +14,14 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS
     /// </summary>
     public class HighlightJSService : IHighlightJSService, IDisposable
     {
-        internal static readonly string MODULE_CACHE_IDENTIFIER = typeof(HighlightJSService).Namespace; // This identifier must be unique to this project, so use the namespace
+        internal static readonly string _moduleCacheIdentifier = typeof(HighlightJSService).Namespace; // This identifier must be unique to this project, so use the namespace
         internal const string BUNDLE_NAME = "bundle.js";
 
         private readonly INodeJSService _nodeJSService;
         private readonly IEmbeddedResourcesService _embeddedResourcesService;
         private readonly SemaphoreSlim _aliasesSemaphore = new SemaphoreSlim(1, 1); // Semaphore instead of an object (lock) so that we can get aliases asynchronously
 
-        private volatile HashSet<string> _aliases; // Volatile since its used in a double checked lock
+        private volatile HashSet<string?>? _aliases; // Volatile since its used in a double checked lock
         private bool _disposed;
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS
         }
 
         /// <inheritdoc />
-        public virtual async Task<string> HighlightAsync(string code,
+        public virtual async Task<string?> HighlightAsync(string code,
             string languageAlias,
             string classPrefix = "hljs-",
             CancellationToken cancellationToken = default)
@@ -63,21 +63,19 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS
                 throw new ArgumentException(string.Format(Strings.Exception_InvalidHighlightJSLanguageAlias, languageAlias));
             }
 
-            var args = new object[] { code, languageAlias, string.IsNullOrWhiteSpace(classPrefix) ? "" : classPrefix };
+            object[] args = new object[] { code, languageAlias, string.IsNullOrWhiteSpace(classPrefix) ? "" : classPrefix };
             // Invoke from cache
-            (bool success, string result) = await _nodeJSService.TryInvokeFromCacheAsync<string>(MODULE_CACHE_IDENTIFIER, "highlight", args, cancellationToken).ConfigureAwait(false);
+            (bool success, string? result) = await _nodeJSService.TryInvokeFromCacheAsync<string>(_moduleCacheIdentifier, "highlight", args, cancellationToken).ConfigureAwait(false);
             if (success)
             {
                 return result;
             }
 
             // Invoke from stream since module is not cached
-            using (Stream moduleStream = _embeddedResourcesService.ReadAsStream(typeof(HighlightJSService).GetTypeInfo().Assembly, BUNDLE_NAME))
-            {
-                // Invoking from stream is 2+x faster than reading the resource as a string and invoking as string. This is because invoking as string causes almost 
-                // 1000x more memory to be allocated, resulting in gen 1+ gcs.
-                return await _nodeJSService.InvokeFromStreamAsync<string>(moduleStream, MODULE_CACHE_IDENTIFIER, "highlight", args, cancellationToken).ConfigureAwait(false);
-            }
+            using Stream moduleStream = _embeddedResourcesService.ReadAsStream(typeof(HighlightJSService).GetTypeInfo().Assembly, BUNDLE_NAME);
+            // Invoking from stream is 2+x faster than reading the resource as a string and invoking as string. This is because invoking as string causes almost 
+            // 1000x more memory to be allocated, resulting in gen 1+ gcs.
+            return await _nodeJSService.InvokeFromStreamAsync<string>(moduleStream, _moduleCacheIdentifier, "highlight", args, cancellationToken).ConfigureAwait(false);
         }
 
         // Note: Returning a ValueTask here doesn't reduce allocations because the runtime already caches Task<bool> objects - https://blogs.msdn.microsoft.com/dotnet/2018/11/07/understanding-the-whys-whats-and-whens-of-valuetask/.
@@ -94,6 +92,7 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS
                 return false;
             }
 
+            // Double checked lock
             if (_aliases == null)
             {
                 await _aliasesSemaphore.WaitAsync().ConfigureAwait(false);
@@ -103,10 +102,9 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS
                     {
                         // This should only ever be called once, before any highlighting is done by NodeJS. So take this oppurtunity to 
                         // cache the module.
-                        using (Stream moduleStream = _embeddedResourcesService.ReadAsStream(typeof(HighlightJSService).GetTypeInfo().Assembly, BUNDLE_NAME))
-                        {
-                            _aliases = new HashSet<string>(await _nodeJSService.InvokeFromStreamAsync<string[]>(moduleStream, MODULE_CACHE_IDENTIFIER, "getAliases", cancellationToken: cancellationToken).ConfigureAwait(false));
-                        }
+                        using Stream moduleStream = _embeddedResourcesService.ReadAsStream(typeof(HighlightJSService).GetTypeInfo().Assembly, BUNDLE_NAME);
+                        string[]? aliasesArray = await _nodeJSService.InvokeFromStreamAsync<string[]>(moduleStream, _moduleCacheIdentifier, "getAliases", cancellationToken: cancellationToken).ConfigureAwait(false);
+                        _aliases = new HashSet<string?>(aliasesArray!); // We know getAliases does not return null
                     }
                 }
                 finally

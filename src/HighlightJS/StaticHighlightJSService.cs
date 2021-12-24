@@ -11,9 +11,9 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS
     /// </summary>
     public static class StaticHighlightJSService
     {
-        private static volatile ServiceProvider _serviceProvider;
-        private static volatile IServiceCollection _services;
-        private static volatile IHighlightJSService _highlightJSService;
+        private static volatile ServiceProvider? _serviceProvider;
+        private static volatile IServiceCollection? _services;
+        private static volatile IHighlightJSService? _highlightJSService;
         private static readonly object _createLock = new object();
 
         private static IHighlightJSService GetOrCreateHighlightJSService()
@@ -78,7 +78,7 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS
         /// <exception cref="InvocationException">Thrown if a NodeJS error occurs.</exception>
         /// <exception cref="ObjectDisposedException">Thrown if this instance has been disposed or if an attempt is made to use one of its dependencies that has been disposed.</exception>
         /// <exception cref="OperationCanceledException">Thrown if <paramref name="cancellationToken"/> is cancelled.</exception>
-        public static Task<string> HighlightAsync(string code, string languageAlias, string classPrefix = "hljs-", CancellationToken cancellationToken = default)
+        public static Task<string?> HighlightAsync(string code, string languageAlias, string classPrefix = "hljs-", CancellationToken cancellationToken = default)
         {
             return GetOrCreateHighlightJSService().HighlightAsync(code, languageAlias, classPrefix, cancellationToken);
         }
