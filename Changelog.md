@@ -3,7 +3,14 @@ This project uses [semantic versioning](http://semver.org/spec/v2.0.0.html). Ref
 *[Semantic Versioning in Practice](https://www.jering.tech/articles/semantic-versioning-in-practice)*
 for an overview of semantic versioning.
 
-## [Unreleased](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.3.0...HEAD)
+## [Unreleased](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.4.0...HEAD)
+
+## [3.4.0](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.3.0...3.4.0) - Dec 24, 2021
+### Changes
+- Bumped dependencies.
+- Added support for nullable reference types.
+- Added netcoreapp3.1 and net5.0 targets.
+- Assembly now strongly types.
 
 ## [3.3.0](https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/compare/3.2.1...3.3.0) - Nov 18, 2019
 ### Changes
