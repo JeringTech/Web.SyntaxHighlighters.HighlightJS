@@ -4,7 +4,7 @@
         "build": "echo ------ Yarn Install ------ && yarn install && echo ------ Webpack Compile ------ && webpack"
     },
     "dependencies": {
-        "highlight.js": "^9.16.2",
+        "highlight.js": "^11.3.1",
         "webpack": "^4.41.2",
         "webpack-cli": "^3.3.10"
     }

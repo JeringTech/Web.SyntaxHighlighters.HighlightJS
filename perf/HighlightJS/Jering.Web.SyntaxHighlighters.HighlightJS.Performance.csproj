@@ -1,17 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp2.1</TargetFramework>
+        <TargetFramework>netcoreapp5.0</TargetFramework>
         <OutputType>Exe</OutputType>
         <IsPackable>false</IsPackable>
+		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+		<DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+		<!-- So we can access internal members in Jering.Javascript.NodeJS -->
+		<AssemblyOriginatorKeyFile>../../keypair.snk</AssemblyOriginatorKeyFile>
+		<SignAssembly>true</SignAssembly>
+		<PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+		<Nullable>enable</Nullable>
+		<LangVersion>9.0</LangVersion>
     </PropertyGroup>
 
     <PropertyGroup>
-        <CodeAnalysisRuleSet>../../Jering.Web.SyntaxHighlighters.HighlightJS.ruleset</CodeAnalysisRuleSet>
+        <CodeAnalysisRuleSet></CodeAnalysisRuleSet>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="BenchmarkDotNet" Version="0.12.0" />
+        <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
     </ItemGroup>
 
     <ItemGroup>

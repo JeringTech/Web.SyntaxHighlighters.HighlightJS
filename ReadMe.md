@@ -33,10 +33,10 @@ string code = @"public string ExampleFunction(string arg)
 // Highlight code
 string result = await StaticHighlightJSService.HighlightAsync(code, "csharp");
 
-string syntaxHighlightedCode = @"<span class=""hljs-function""><span class=""hljs-keyword"">public</span> <span class=""hljs-keyword"">string</span> <span class=""hljs-title"">ExampleFunction</span>(<span class=""hljs-params""><span class=""hljs-keyword"">string</span> arg</span>)</span>
+string syntaxHighlightedCode = @"<span class=""hljs-function""><span class=""hljs-keyword"">public</span> <span class=""hljs-built_in"">string</span> <span class=""hljs-title"">ExampleFunction</span>(<span class=""hljs-params""><span class=""hljs-built_in"">string</span> arg</span>)</span>
 {
     <span class=""hljs-comment"">// Example comment</span>
-    <span class=""hljs-keyword"">return</span> arg + <span class=""hljs-string"">""dummyString""</span>;
+    <span class=""hljs-keyword"">return</span> arg + <span class=""hljs-string"">&quot;dummyString&quot;</span>;
 }";
 
 // result == syntax highlighted code
@@ -59,10 +59,10 @@ ServiceProvider serviceProvider = services.BuildServiceProvider();
 IHighlightJSService highlightJSService = serviceProvider.GetRequiredService<IHighlightJSService>();
 string result = await highlightJSService.HighlightAsync(code, "csharp");
 
-string syntaxHighlightedCode = @"<span class=""hljs-function""><span class=""hljs-keyword"">public</span> <span class=""hljs-keyword"">string</span> <span class=""hljs-title"">ExampleFunction</span>(<span class=""hljs-params""><span class=""hljs-keyword"">string</span> arg</span>)</span>
+string syntaxHighlightedCode = @"<span class=""hljs-function""><span class=""hljs-keyword"">public</span> <span class=""hljs-built_in"">string</span> <span class=""hljs-title"">ExampleFunction</span>(<span class=""hljs-params""><span class=""hljs-built_in"">string</span> arg</span>)</span>
 {
     <span class=""hljs-comment"">// Example comment</span>
-    <span class=""hljs-keyword"">return</span> arg + <span class=""hljs-string"">""dummyString""</span>;
+    <span class=""hljs-keyword"">return</span> arg + <span class=""hljs-string"">&quot;dummyString&quot;</span>;
 }";
 // result == syntax highlighted code
 Assert.Equal(syntaxHighlightedCode, result);
@@ -257,10 +257,10 @@ public string ExampleFunction(string arg)
 is transformed into the following markup by the syntax highlighter HighlightJS:
 
 ```html
-<span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">string</span> <span class="hljs-title">ExampleFunction</span>(<span class="hljs-params"><span class="hljs-keyword">string</span> arg</span>)
+<span class="hljs-function"><span class="hljs-built_in">public</span> <span class="hljs-built_in">string</span> <span class="hljs-title">ExampleFunction</span>(<span class="hljs-params"><span class="hljs-built_in">string</span> arg</span>)
 </span>{
     <span class="hljs-comment">// Example comment</span>
-    <span class="hljs-keyword">return</span> arg + <span class="hljs-string">"dummyString"</span>;
+    <span class="hljs-built_in">return</span> arg + <span class="hljs-string">"dummyString"</span>;
 }
 ```
 

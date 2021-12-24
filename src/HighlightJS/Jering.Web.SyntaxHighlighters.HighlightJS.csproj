@@ -1,82 +1,83 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
-        <TargetFrameworks Condition="'$(OS)' != 'Windows_NT'">netstandard2.0</TargetFrameworks>
-        <PackageId>Jering.Web.SyntaxHighlighters.HighlightJS</PackageId>
-        <Authors>JeremyTCD</Authors>
-        <Title>Use the Syntax Highlighter, HighlightJS, from C#</Title>
-        <Description>Jering.Web.SyntaxHighlighters.HighlightJS enables you to perform syntax highlighting from C# projects using Highlight.js.</Description>
-        <Copyright>© 2018-2019 Jering. All rights reserved.</Copyright>
-        <PackageProjectUrl>https://www.jering.tech/utilities/jering.web.syntaxhighlighters.highlightjs/index</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS</RepositoryUrl>
-        <PackageLicenseUrl>$(RepositoryUrl)/blob/master/License.md</PackageLicenseUrl>
-        <PackageReleaseNotes>$(RepositoryUrl)/blob/master/Changelog.md</PackageReleaseNotes>
-        <PackageTags>syntax highlighter</PackageTags>
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
-        <EmbedUntrackedSources>true</EmbedUntrackedSources>
-        <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-        <RepositoryType>git</RepositoryType>
-        <LangVersion>7.3</LangVersion>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <PackageIconUrl>https://raw.githubusercontent.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/master/nuget_icon.png</PackageIconUrl>
-        <CodeAnalysisRuleSet>../../Jering.Web.SyntaxHighlighters.HighlightJS.ruleset</CodeAnalysisRuleSet>
-        <BundleName>bundle.js</BundleName>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;netcoreapp3.1;net461;net5.0</TargetFrameworks>
+		<TargetFrameworks Condition="'$(OS)' != 'Windows_NT'">netstandard2.0;net5.0;netcoreapp3.1</TargetFrameworks>
+		<PackageId>Jering.Web.SyntaxHighlighters.HighlightJS</PackageId>
+		<Authors>JeremyTCD</Authors>
+		<Title>Use the Syntax Highlighter, HighlightJS, from C#</Title>
+		<Description>Jering.Web.SyntaxHighlighters.HighlightJS enables you to perform syntax highlighting from C# projects using Highlight.js.</Description>
+		<Copyright>© 2018-2021 Jering. All rights reserved.</Copyright>
+		<PackageProjectUrl>https://www.jering.tech/utilities/jering.web.syntaxhighlighters.highlightjs/index</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/JeringTech/Web.SyntaxHighlighters.HighlightJS</RepositoryUrl>
+		<PackageLicenseUrl>$(RepositoryUrl)/blob/master/License.md</PackageLicenseUrl>
+		<PackageReleaseNotes>$(RepositoryUrl)/blob/master/Changelog.md</PackageReleaseNotes>
+		<PackageTags>syntax highlighter</PackageTags>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+		<RepositoryType>git</RepositoryType>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<PackageIconUrl>https://raw.githubusercontent.com/JeringTech/Web.SyntaxHighlighters.HighlightJS/master/nuget_icon.png</PackageIconUrl>
+		<BundleName>bundle.js</BundleName>
         <!-- Exclude Javascript\bin and Javascript\node_modules from project - https://github.com/dotnet/cli/issues/7525 -->
         <DefaultItemExcludes>Javascript\bin\**;Javascript\node_modules\**;$(DefaultItemExcludes)</DefaultItemExcludes>
-    </PropertyGroup>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+        <AssemblyOriginatorKeyFile>../../keypair.snk</AssemblyOriginatorKeyFile>
+        <SignAssembly>true</SignAssembly>
+        <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+        <Nullable>enable</Nullable>
+        <!-- So we can use generators -->
+        <LangVersion>preview</LangVersion>
+	</PropertyGroup>
 
-    <ItemGroup>
-        <JavascriptInputs Include="Javascript\**" Exclude="$(DefaultItemExcludes)" />
-        <JavascriptOutputs Include="Javascript\bin\$(Configuration)\$(BundleName)" />
-        <!-- If any file in JavascriptInputs has changed, fast up-to-date check must indicate that a rebuild is required - https://github.com/dotnet/project-system/pull/2241 -->
-        <UpToDateCheckInput Include="@(JavascriptInputs)" />
-        <EmbeddedResource Include="@(JavascriptOutputs)" LogicalName="$(BundleName)" />
-    </ItemGroup>
+	<ItemGroup>
+		<JavascriptInputs Include="Javascript\**" Exclude="$(DefaultItemExcludes)" />
+		<JavascriptOutputs Include="Javascript\bin\$(Configuration)\$(BundleName)" />
+		<!-- If any file in JavascriptInputs has changed, fast up-to-date check must indicate that a rebuild is required - https://github.com/dotnet/project-system/pull/2241 -->
+		<UpToDateCheckInput Include="@(JavascriptInputs)" />
+		<EmbeddedResource Include="@(JavascriptOutputs)" LogicalName="$(BundleName)" />
+	</ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Jering.Javascript.NodeJS" Version="4.3.0" />
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19554-01">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.3" />
-        <PackageReference Include="Roslynator.Analyzers" Version="2.2.0" PrivateAssets="all" ExcludeAssets="Runtime">
-          <IncludeAssets>compile; build; native; contentfiles; analyzers</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Roslynator.CodeFixes" Version="2.0.0" PrivateAssets="all" ExcludeAssets="Runtime">
-          <IncludeAssets>compile; build; native; contentfiles; analyzers</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Yarn.MSBuild" Version="1.16.0" PrivateAssets="all" ExcludeAssets="Runtime">
-          <IncludeAssets>compile; build; native; contentfiles; analyzers</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.0" />
-    </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Jering.Javascript.NodeJS" Version="6.2.0" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Yarn.MSBuild" Version="1.22.10" PrivateAssets="all" ExcludeAssets="Runtime">
+			<IncludeAssets>compile; build; native; contentfiles; analyzers</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+	</ItemGroup>
 
-    <ItemGroup>
-      <Compile Update="Strings.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>Strings.resx</DependentUpon>
-      </Compile>
-    </ItemGroup>
+	<ItemGroup>
+		<Compile Update="Strings.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Strings.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
 
-    <ItemGroup>
-        <EmbeddedResource Update="Strings.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>Strings.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-    </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="Strings.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Strings.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
 
-    <!-- 
-    <Target Name="JavascriptBuild" BeforeTargets="DispatchToInnerBuilds" Inputs="@(JavascriptInputs)" Outputs="@(JavascriptOutputs)">	        Notes on BeforeTargets: DispatchToInnerBuilds only runs if we're multi-targeting. PreBuildEvent runs before builds for each framework. 
+	<!-- 
+		The following is no longer relevant since we're now always multi-targeting, even on non-windows:
+	
+	    Notes on BeforeTargets: DispatchToInnerBuilds only runs if we're multi-targeting. PreBuildEvent runs before builds for each framework. 
         If BeforeTargets contains only DispatchToInnerBuilds and we specify a framework when we call dotnet build, JavascriptBuild does not run.
         If BeforeTargets contains only PreBuildEvent and we multi-target, JavascriptBuild runs multiple times in parallel.
         So we must specify both. This way if we are multi-targeting, JavascriptBuild runs once, before DispatchToInnerBuilds after which inputs == outputs. 
         If we aren't multi-targeting, JavascriptBuild runs before PreBuildEvent.
     -->
-    <Target Name="JavascriptBuild" BeforeTargets="DispatchToInnerBuilds;PreBuildEvent" Inputs="@(JavascriptInputs)" Outputs="@(JavascriptOutputs)">
-        <Yarn WorkingDirectory=".\Javascript" Command="run build --env.mode=$(Configuration) --env.bundleName=$(BundleName)" />
-    </Target>
+	<Target Name="JavascriptBuild" BeforeTargets="DispatchToInnerBuilds" Inputs="@(JavascriptInputs)" Outputs="@(JavascriptOutputs)">
+		<Yarn WorkingDirectory=".\Javascript" Command="run build --env.mode=$(Configuration) --env.bundleName=$(BundleName)" />
+	</Target>
 
 </Project>

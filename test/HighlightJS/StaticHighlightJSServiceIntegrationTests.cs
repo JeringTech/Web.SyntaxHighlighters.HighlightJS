@@ -9,9 +9,9 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
 {
     public class StaticHighlightJSServiceIntegrationTests
     {
-        private const int _timeoutMS = 60000;
+        private const int TIMEOUT_MS = 60000;
 
-        [Fact(Timeout = _timeoutMS)]
+        [Fact(Timeout = TIMEOUT_MS)]
         public async void Configure_ConfiguresOptions()
         {
             // Act
@@ -21,14 +21,14 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
             StaticHighlightJSService.Configure<OutOfProcessNodeJSServiceOptions>(options => options.TimeoutMS = 0);
 
             // Assert
-            // Since we set timeout to 0, the NodeJS invocation is gauranteed to timeout. The NodeJS connection attempt is likely to timeout. Both throw an InvocationException.
-            await Assert.ThrowsAsync<InvocationException>(async () => await StaticHighlightJSService.IsValidLanguageAliasAsync("csharp").ConfigureAwait(false)).ConfigureAwait(false);
+            // Since we set timeout to 0, the NodeJS invocation is gauranteed to timeout, throwing a ConnectionException.
+            await Assert.ThrowsAsync<ConnectionException>(async () => await StaticHighlightJSService.IsValidLanguageAliasAsync("csharp").ConfigureAwait(false)).ConfigureAwait(false);
 
             // Reset so other tests aren't affected
             StaticHighlightJSService.Configure<OutOfProcessNodeJSServiceOptions>(options => options.TimeoutMS = 60000);
         }
 
-        [Fact(Timeout = _timeoutMS)]
+        [Fact(Timeout = TIMEOUT_MS)]
         public async void DisposeServiceProvider_DisposesServiceProvider()
         {
             // Arrange
@@ -45,26 +45,26 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
 
             // Act
             StaticHighlightJSService.DisposeServiceProvider(); // Dispose, the next call should not be affected by TimeoutMS = 0
-            string result = await StaticHighlightJSService.HighlightAsync(@"public string ExampleFunction(string arg)
+            string? result = await StaticHighlightJSService.HighlightAsync(@"public string ExampleFunction(string arg)
 {
     // Example comment
     return arg + ""dummyString"";
 }", "csharp").ConfigureAwait(false);
 
             // Assert
-            Assert.Equal(@"<span class=""hljs-function""><span class=""hljs-keyword"">public</span> <span class=""hljs-keyword"">string</span> <span class=""hljs-title"">ExampleFunction</span>(<span class=""hljs-params""><span class=""hljs-keyword"">string</span> arg</span>)</span>
+            Assert.Equal(@"<span class=""hljs-function""><span class=""hljs-keyword"">public</span> <span class=""hljs-built_in"">string</span> <span class=""hljs-title"">ExampleFunction</span>(<span class=""hljs-params""><span class=""hljs-built_in"">string</span> arg</span>)</span>
 {
     <span class=""hljs-comment"">// Example comment</span>
-    <span class=""hljs-keyword"">return</span> arg + <span class=""hljs-string"">""dummyString""</span>;
+    <span class=""hljs-keyword"">return</span> arg + <span class=""hljs-string"">&quot;dummyString&quot;</span>;
 }", result);
         }
 
-        [Theory(Timeout = _timeoutMS)]
+        [Theory(Timeout = TIMEOUT_MS)]
         [MemberData(nameof(HighlightAsync_HighlightsCode_Data))]
         public async Task HighlightAsync_HighlightsCode(string dummyCode, string dummyLanguageAlias, string expectedResult)
         {
             // Act
-            string result = await StaticHighlightJSService.HighlightAsync(dummyCode, dummyLanguageAlias).ConfigureAwait(false);
+            string? result = await StaticHighlightJSService.HighlightAsync(dummyCode, dummyLanguageAlias).ConfigureAwait(false);
 
             // Assert
             Assert.Equal(expectedResult, result);
@@ -82,9 +82,9 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
     return arg + 'dummyString';
 }",
                     "javascript",
-                    @"<span class=""hljs-function""><span class=""hljs-keyword"">function</span> <span class=""hljs-title"">exampleFunction</span>(<span class=""hljs-params"">arg</span>) </span>{
+                    @"<span class=""hljs-keyword"">function</span> <span class=""hljs-title function_"">exampleFunction</span>(<span class=""hljs-params"">arg</span>) {
     <span class=""hljs-comment"">// Example comment</span>
-    <span class=""hljs-keyword"">return</span> arg + <span class=""hljs-string"">'dummyString'</span>;
+    <span class=""hljs-keyword"">return</span> arg + <span class=""hljs-string"">&#x27;dummyString&#x27;</span>;
 }"
                 },
 
@@ -97,16 +97,16 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
     return arg + ""dummyString"";
 }",
                     "csharp",
-                    @"<span class=""hljs-function""><span class=""hljs-keyword"">public</span> <span class=""hljs-keyword"">string</span> <span class=""hljs-title"">ExampleFunction</span>(<span class=""hljs-params""><span class=""hljs-keyword"">string</span> arg</span>)</span>
+                    @"<span class=""hljs-function""><span class=""hljs-keyword"">public</span> <span class=""hljs-built_in"">string</span> <span class=""hljs-title"">ExampleFunction</span>(<span class=""hljs-params""><span class=""hljs-built_in"">string</span> arg</span>)</span>
 {
     <span class=""hljs-comment"">// Example comment</span>
-    <span class=""hljs-keyword"">return</span> arg + <span class=""hljs-string"">""dummyString""</span>;
+    <span class=""hljs-keyword"">return</span> arg + <span class=""hljs-string"">&quot;dummyString&quot;</span>;
 }"
                 }
             };
         }
 
-        [Fact(Timeout = _timeoutMS)]
+        [Fact(Timeout = TIMEOUT_MS)]
         public void HighlightAsync_IsThreadSafe()
         {
             // Arrange
@@ -118,7 +118,7 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
             const string dummyLanguageAlias = "csharp";
 
             // Act
-            var results = new ConcurrentQueue<string>();
+            var results = new ConcurrentQueue<string?>();
             const int numThreads = 5;
             var threads = new List<Thread>();
             for (int i = 0; i < numThreads; i++)
@@ -133,19 +133,19 @@ namespace Jering.Web.SyntaxHighlighters.HighlightJS.Tests
             }
 
             // Assert
-            const string expectedResult = @"<span class=""hljs-function""><span class=""hljs-keyword"">public</span> <span class=""hljs-keyword"">string</span> <span class=""hljs-title"">ExampleFunction</span>(<span class=""hljs-params""><span class=""hljs-keyword"">string</span> arg</span>)</span>
+            const string expectedResult = @"<span class=""hljs-function""><span class=""hljs-keyword"">public</span> <span class=""hljs-built_in"">string</span> <span class=""hljs-title"">ExampleFunction</span>(<span class=""hljs-params""><span class=""hljs-built_in"">string</span> arg</span>)</span>
 {
     <span class=""hljs-comment"">// Example comment</span>
-    <span class=""hljs-keyword"">return</span> arg + <span class=""hljs-string"">""dummyString""</span>;
+    <span class=""hljs-keyword"">return</span> arg + <span class=""hljs-string"">&quot;dummyString&quot;</span>;
 }";
             Assert.Equal(numThreads, results.Count);
-            foreach (string result in results)
+            foreach (string? result in results)
             {
                 Assert.Equal(expectedResult, result);
             }
         }
 
-        [Theory(Timeout = _timeoutMS)]
+        [Theory(Timeout = TIMEOUT_MS)]
         [MemberData(nameof(IsValidLanguageAliasAsync_ChecksIfLanguageAliasIsValid_Data))]
         public async Task IsValidLanguageAliasAsync_ChecksIfLanguageAliasIsValid(string dummyLanguageAlias, bool expectedResult)
         {

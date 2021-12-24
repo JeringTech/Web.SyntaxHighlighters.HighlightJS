@@ -1,4 +1,4 @@
-var hljs = require('highlight.js/lib/highlight.js');
+var hljs = require('highlight.js/lib/core.js');
 
 // Monkey patch registerLanguage to obtain complete list of aliases
 var languageAliases = [];

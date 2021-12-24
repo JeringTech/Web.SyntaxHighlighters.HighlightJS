@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28729.10
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32002.185
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jering.Web.SyntaxHighlighters.HighlightJS", "src\HighlightJS\Jering.Web.SyntaxHighlighters.HighlightJS.csproj", "{E088CD42-B7A8-497F-839A-85663C31111D}"
 EndProject
@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		azure-pipelines.yml = azure-pipelines.yml
 		Changelog.md = Changelog.md
 		codecov.yml = codecov.yml
-		Jering.Web.SyntaxHighlighters.HighlightJS.ruleset = Jering.Web.SyntaxHighlighters.HighlightJS.ruleset
+		keypair.snk = keypair.snk
 		License.md = License.md
 		ReadMe.md = ReadMe.md
 		ThirdPartyLicenses.md = ThirdPartyLicenses.md

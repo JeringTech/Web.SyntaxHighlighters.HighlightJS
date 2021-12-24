@@ -11,8 +11,8 @@ resources:
 jobs:
 - template: templates/nuget/main.yml@templates
   parameters:
-    nugetUnreleasedPrereleasePushEndpoint: "https://www.myget.org/F/jering/api/v3/index.json"
+    outOfProcessBuildDependencies: ["nodejs"]
+    cacheYarnPackages: true
 - template: templates/docs/main.yml@templates
   parameters:
-    nugetRestoreEndpoints: "https://pkgs.dev.azure.com/JeremyTCD/_packaging/Main/nuget/v2"
     nugetRestorePats: "$(nugetRestorePats)"
